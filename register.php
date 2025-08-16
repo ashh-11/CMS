@@ -1,20 +1,33 @@
 <?php
-// register.php - Handles new user registration (customer role)
-session_start(); // Start the session to store temporary messages or user status
+// register.php - Handles new user registration (customer role or one-time admin creation)
 
-// Include the database connection configuration
-require_once 'config.php'; // Defines DB constants
-require_once 'inc.connections.php'; // Establishes $conn, starts ob_start() and session_start()
+// Include the connections file which handles ob_start(), session_start(), config.php inclusion, and DB connection ($conn).
+require_once 'inc.connections.php';
 
 // Initialize variables for form fields and error/success messages
 $username = $email = $password = $confirm_password = '';
 $username_err = $email_err = $password_err = $confirm_password_err = '';
 $success_message = $general_error = '';
+$is_first_admin_registration = false; // Flag to check if this is the first admin signup
+
+// Check if any admin user already exists
+$sql_check_admin = "SELECT COUNT(*) FROM users WHERE role = 'admin'";
+$result_check_admin = mysqli_query($conn, $sql_check_admin);
+$row_check_admin = mysqli_fetch_row($result_check_admin);
+$admin_count = $row_check_admin[0];
+mysqli_free_result($result_check_admin);
+
+if ($admin_count == 0) {
+    $is_first_admin_registration = true;
+    $assigned_role = ROLE_ADMIN; // Assign admin role if no admin exists
+} else {
+    $assigned_role = ROLE_CUSTOMER; // Default to customer role
+}
 
 // If user is already logged in, redirect them (e.g., to their dashboard or tracking page)
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     if (isset($_SESSION['role'])) {
-        if ($_SESSION['role'] == ROLE_ADMIN) { // Using constant from config.php
+        if ($_SESSION['role'] == ROLE_ADMIN) {
             header('location: admin_dashboard.php');
         } elseif ($_SESSION['role'] == ROLE_AGENT) {
             header('location: agent_dashboard.php');
@@ -45,14 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (mysqli_stmt_num_rows($stmt) == 1) {
                     $username_err = "This username (email) is already taken.";
                 } else {
-                    $username = $email;
+                    $username = $email; // Valid and unique username
                 }
             } else {
-                $general_error = "<div class='alert alert-danger'>Oops! Something went wrong. Please try again later.</div>";
+                $general_error = "<div class='alert alert-danger'>Oops! Something went wrong checking username. Please try again later.</div>";
+                error_log("Register user unique check failed: " . mysqli_error($conn));
             }
             mysqli_stmt_close($stmt);
         } else {
-            $general_error = "<div class='alert alert-danger'>Database error. Please try again.</div>";
+            $general_error = "<div class='alert alert-danger'>Database error preparing username check. Please try again.</div>";
+            error_log("Register user prepare username check failed: " . mysqli_error($conn));
         }
     }
 
@@ -75,43 +90,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // 4. Validate Terms and Conditions checkbox
+    if (!isset($_POST['terms'])) {
+        $general_error = "<div class='alert alert-danger'>You must accept the terms and conditions.</div>";
+    }
+
     // If no validation errors, attempt to insert new user into database
     if (empty($username_err) && empty($password_err) && empty($confirm_password_err) && empty($general_error)) {
         // Prepare an INSERT statement
         $sql = "INSERT INTO users (username, password_hash, role, status) VALUES (?, ?, ?, 'active')";
 
         if ($stmt = mysqli_prepare($conn, $sql)) {
-            // Bind parameters: 's' for string (username), 's' for string (hashed password), 's' for string (role)
+            // Bind parameters: 's' for username, 's' for hashed password, 's' for role
             mysqli_stmt_bind_param($stmt, "sss", $param_username, $param_password_hash, $param_role);
 
             // Set parameters
             $param_username = $username;
             // Hash the password securely before storing
             $param_password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $param_role = ROLE_CUSTOMER; // Automatically assign 'customer' role for public registration
+            $param_role = $assigned_role; // Use the role determined earlier (admin or customer)
 
             // Execute the prepared statement
             if (mysqli_stmt_execute($stmt)) {
                 // Registration successful, redirect to login page with a success message
-                $_SESSION['registration_success'] = "Account created successfully! Please log in.";
+                $_SESSION['registration_success'] = "Account created successfully! " .
+                                                    ($assigned_role == ROLE_ADMIN ? "You are the first administrator." : "Please log in with your new customer account.");
                 header('location: login.php');
                 exit;
             } else {
-                $general_error = "<div class='alert alert-danger'>Something went wrong. Please try again later.</div>";
-                error_log("User registration failed: " . mysqli_error($conn));
+                $general_error = "<div class='alert alert-danger'>Something went wrong during registration. Please try again later.</div>";
+                error_log("User insertion failed: " . mysqli_error($conn));
             }
             // Close statement
             mysqli_stmt_close($stmt);
         } else {
-            $general_error = "<div class='alert alert-danger'>Database error preparing statement.</div>";
-            error_log("Prepare statement failed: " . mysqli_error($conn));
+            $general_error = "<div class='alert alert-danger'>Database error preparing insert statement.</div>";
+            error_log("Prepare insert statement failed: " . mysqli_error($conn));
         }
     }
 }
-// Close database connection at the end of the script (handled by inc.footer.php if included, otherwise here)
-if (isset($conn) && $conn) {
-    mysqli_close($conn);
-}
+// Database connection closed at the end of inc.footer.php (via inc.connections.php)
 ?>
 
 <!DOCTYPE html>
@@ -145,10 +163,10 @@ if (isset($conn) && $conn) {
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- Custom CSS for Register Page (similar to login for consistency) -->
+  <!-- Custom CSS for Register Page -->
   <style>
     body {
-      background: #f0f2f5; /* A light grey background */
+      background: #f0f2f5;
     }
 
     .register.section {
@@ -215,7 +233,15 @@ if (isset($conn) && $conn) {
 
                   <div class="pt-4 pb-2">
                     <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
-                    <p class="text-center small">Enter your personal details to create account</p>
+                    <?php if ($is_first_admin_registration) { ?>
+                        <p class="text-center small text-danger">
+                            ** Important: This will be your **Administrator** account. **
+                            <br>
+                            Please use a strong password.
+                        </p>
+                    <?php } else { ?>
+                        <p class="text-center small">Enter your personal details to create a customer account.</p>
+                    <?php } ?>
                   </div>
 
                   <form class="row g-3 needs-validation" novalidate action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
@@ -262,6 +288,10 @@ if (isset($conn) && $conn) {
                   </form>
 
                 </div>
+              </div>
+
+              <div class="credits">
+                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
               </div>
 
             </div>

@@ -1,9 +1,14 @@
 <?php
 // login.php - Handles user login authentication
-session_start(); // Start the session at the very beginning of the script
 
-// Include the database configuration file
-require_once 'config.php';
+// --- FIX: Include inc.connections.php instead of config.php ---
+// inc.connections.php handles:
+// 1. ob_start()
+// 2. session_start()
+// 3. require_once 'config.php' (so config constants are available)
+// 4. Establishes the database connection ($conn)
+require_once 'inc.connections.php';
+
 
 // Initialize variables for username and password, and their respective error messages
 $username = $password = '';
@@ -12,9 +17,10 @@ $login_err = ''; // A single error message for login failures to avoid leaking i
 // Check if the user is already logged in. If so, redirect them to their respective dashboard.
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     if (isset($_SESSION['role'])) {
-        if ($_SESSION['role'] == 'admin') {
+        // Use defined constants from config.php for roles
+        if ($_SESSION['role'] == ROLE_ADMIN) {
             header('location: admin_dashboard.php');
-        } elseif ($_SESSION['role'] == 'agent') {
+        } elseif ($_SESSION['role'] == ROLE_AGENT) {
             header('location: agent_dashboard.php');
         } else {
             // For 'customer' role or any other role not having a dedicated dashboard,
@@ -53,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "SELECT user_id, username, password_hash, role, location_id FROM users WHERE username = ?";
 
         // Use a prepared statement to prevent SQL injection (CRITICAL SECURITY PRACTICE)
+        // $conn is now guaranteed to be available due to inc.connections.php
         if ($stmt = mysqli_prepare($conn, $sql)) {
             // Bind parameters: 's' indicates the parameter is a string
             mysqli_stmt_bind_param($stmt, "s", $param_username);
@@ -76,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         // Use password_verify() to safely check the entered password against the stored hash.
                         // The $hashed_password must have been created using password_hash() upon user creation/update.
                         if (password_verify($password, $hashed_password)) {
-                            // Password is correct, so start a new session
+                            // Password is correct, so start a new session (session_start is already handled by inc.connections.php)
                             session_regenerate_id(true); // Regenerate session ID for security against session fixation attacks
 
                             // Store session variables
@@ -98,9 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
 
                             // Redirect user based on their role
-                            if ($role == 'admin') {
+                            if ($role == admin) {
                                 header('location: admin_dashboard.php');
-                            } elseif ($role == 'agent') {
+                            } elseif ($role == ROLE_AGENT) {
                                 header('location: agent_dashboard.php');
                             } else { // 'customer' or any other non-admin/agent role
                                 header('location: track_shipment.php');
@@ -129,7 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
     // Close the database connection if the form submission was processed and connection wasn't closed by redirection
-    mysqli_close($conn);
+    // This is handled by inc.footer.php if that file is included. For standalone scripts, ensure it's here.
+    if (isset($conn) && $conn) { // Added check to prevent closing a null connection if connection failed earlier
+        mysqli_close($conn);
+    }
 }
 ?>
 <!DOCTYPE html>
