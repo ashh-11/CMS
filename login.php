@@ -1,145 +1,80 @@
 <?php
-// login.php - Handles user login authentication
-
-// --- FIX: Include inc.connections.php instead of config.php ---
-// inc.connections.php handles:
-// 1. ob_start()
-// 2. session_start()
-// 3. require_once 'config.php' (so config constants are available)
-// 4. Establishes the database connection ($conn)
 require_once 'inc.connections.php';
 
-
-// Initialize variables for username and password, and their respective error messages
 $username = $password = '';
-$login_err = ''; // A single error message for login failures to avoid leaking info
+$login_err = '';
 
-// Check if the user is already logged in. If so, redirect them to their respective dashboard.
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
-    if (isset($_SESSION['role'])) {
-        // Use defined constants from config.php for roles
-        if ($_SESSION['role'] == ROLE_ADMIN) {
-            header('location: admin_dashboard.php');
-        } elseif ($_SESSION['role'] == ROLE_AGENT) {
-            header('location: agent_dashboard.php');
-        } else {
-            // For 'customer' role or any other role not having a dedicated dashboard,
-            // redirect to a public page like shipment tracking.
-            header('location: track_shipment.php');
-        }
+  if (isset($_SESSION['role'])) {
+    $role = $_SESSION['role'];
+    if ($role === ROLE_ADMIN) {
+      header('Location: admin_dashboard.php');
+    } elseif ($role === ROLE_AGENT) {
+      header('Location: agent_dashboard.php');
     } else {
-        // If role is not set but logged in, default to a safe page.
-        header('location: track_shipment.php');
+      header('Location: track_shipment.php');
     }
-    exit; // Terminate script execution after redirection
+    exit;
+  }
 }
 
-// Process login form submission when the form is submitted via POST method
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  if (empty(trim($_POST['username']))) {
+    $login_err = "Please enter username.";
+  } else {
+    $username = trim($_POST['username']);
+  }
 
-    // Validate username input
-    if (empty(trim($_POST['username']))) {
-        $login_err = "Please enter username.";
-    } else {
-        $username = trim($_POST['username']);
-    }
+  if (empty(trim($_POST['password']))) {
+    $login_err = !empty($login_err) ? $login_err . " And please enter your password." : "Please enter your password.";
+  } else {
+    $password = trim($_POST['password']);
+  }
 
-    // Validate password input
-    if (empty(trim($_POST['password']))) {
-        // Append to existing error or set new one if username was fine
-        $login_err = !empty($login_err) ? $login_err . " And please enter your password." : "Please enter your password.";
-    } else {
-        $password = trim($_POST['password']);
-    }
+  if (empty($login_err)) {
+    $sql = "SELECT user_id, username, password_hash, role, location_id FROM users WHERE username = '" . mysqli_real_escape_string($conn, $username) . "'";
+    $result = mysqli_query($conn, $sql);
 
-    // If there are no input errors at this stage
-    if (empty($login_err)) {
-        // Prepare a SQL SELECT statement to fetch user details from the 'users' table.
-        // We fetch user_id, username, password_hash (the stored hashed password), role, and location_id.
-        $sql = "SELECT user_id, username, password_hash, role, location_id FROM users WHERE username = ?";
+    if ($result && mysqli_num_rows($result) == 1) {
+      $row = mysqli_fetch_assoc($result);
+      $user_id = $row['user_id'];
+      $stored_username = $row['username'];
+      $hashed_password = $row['password_hash'];
+      $role = $row['role'];
+      $location_id = $row['location_id'];
+      mysqli_free_result($result);
 
-        // Use a prepared statement to prevent SQL injection (CRITICAL SECURITY PRACTICE)
-        // $conn is now guaranteed to be available due to inc.connections.php
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            // Bind parameters: 's' indicates the parameter is a string
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
+      if (password_verify($password, $hashed_password)) {
+        session_regenerate_id(true);
 
-            // Set parameter
-            $param_username = $username;
+        $_SESSION['loggedin'] = true;
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['username'] = $stored_username;
+        $_SESSION['role'] = $role;
+        $_SESSION['location_id'] = $location_id;
 
-            // Attempt to execute the prepared statement
-            if (mysqli_stmt_execute($stmt)) {
-                // Store the result of the executed statement
-                mysqli_stmt_store_result($stmt);
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
+        $sql_audit = "INSERT INTO user_login_audit (user_id, login_time, ip_address) VALUES ('$user_id', NOW(), '$ip_address')";
+        mysqli_query($conn, $sql_audit);
 
-                // Check if a user with the given username exists (should be exactly one row)
-                if (mysqli_stmt_num_rows($stmt) == 1) {
-                    // Bind result variables to the columns fetched from the database
-                    mysqli_stmt_bind_result($stmt, $user_id, $username, $hashed_password, $role, $location_id);
-
-                    // Fetch the results
-                    if (mysqli_stmt_fetch($stmt)) {
-                        // --- SECURE PASSWORD VERIFICATION ---
-                        // Use password_verify() to safely check the entered password against the stored hash.
-                        // The $hashed_password must have been created using password_hash() upon user creation/update.
-                        if (password_verify($password, $hashed_password)) {
-                            // Password is correct, so start a new session (session_start is already handled by inc.connections.php)
-                            session_regenerate_id(true); // Regenerate session ID for security against session fixation attacks
-
-                            // Store session variables
-                            $_SESSION['loggedin'] = true;
-                            $_SESSION['user_id'] = $user_id;
-                            $_SESSION['username'] = $username;
-                            $_SESSION['role'] = $role;
-                            $_SESSION['location_id'] = $location_id; // Store agent's assigned location (will be NULL for admin/customer)
-
-                            // Log the successful login event (for auditing)
-                            $sql_audit = "INSERT INTO user_login_audit (user_id, login_time, ip_address) VALUES (?, NOW(), ?)";
-                            if ($stmt_audit = mysqli_prepare($conn, $sql_audit)) {
-                                $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN'; // Get client IP address
-                                mysqli_stmt_bind_param($stmt_audit, "is", $user_id, $ip_address);
-                                mysqli_stmt_execute($stmt_audit);
-                                mysqli_stmt_close($stmt_audit);
-                            } else {
-                                error_log("Failed to prepare user_login_audit statement: " . mysqli_error($conn));
-                            }
-
-                            // Redirect user based on their role
-                            if ($role == admin) {
-                                header('location: admin_dashboard.php');
-                            } elseif ($role == ROLE_AGENT) {
-                                header('location: agent_dashboard.php');
-                            } else { // 'customer' or any other non-admin/agent role
-                                header('location: track_shipment.php');
-                            }
-                            exit; // Terminate script after successful login and redirection
-                        } else {
-                            // Password is not valid. Provide a generic error message.
-                            $login_err = "Invalid username or password.";
-                        }
-                    }
-                } else {
-                    // No account found with the provided username. Provide a generic error message.
-                    $login_err = "Invalid username or password.";
-                }
-            } else {
-                // Error executing the prepared statement. Log the error, provide generic message.
-                error_log("Login query execution failed: " . mysqli_error($conn));
-                $login_err = "An unexpected error occurred. Please try again later.";
-            }
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
+        if ($role === ROLE_ADMIN) {
+          header('Location: admin_dashboard.php');
+        } elseif ($role === ROLE_AGENT) {
+          header('Location: agent_dashboard.php');
         } else {
-            // Error preparing the statement. Log the error, provide generic message.
-            error_log("Login query preparation failed: " . mysqli_error($conn));
-            $login_err = "An unexpected error occurred. Please try again later.";
+          header('Location: track_shipment.php');
         }
+        exit;
+      } else {
+        $login_err = "Invalid username or password.";
+      }
+    } else {
+      $login_err = "Invalid username or password.";
     }
-    // Close the database connection if the form submission was processed and connection wasn't closed by redirection
-    // This is handled by inc.footer.php if that file is included. For standalone scripts, ensure it's here.
-    if (isset($conn) && $conn) { // Added check to prevent closing a null connection if connection failed earlier
-        mysqli_close($conn);
-    }
+  }
+}
+if (isset($conn) && $conn) {
+    mysqli_close($conn);
 }
 ?>
 <!DOCTYPE html>
@@ -152,15 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta content="Login page for Admin, Agent, and Customer roles in the Courier Management System." name="description">
   <meta content="courier, login, admin, agent, customer" name="keywords">
 
-  <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
@@ -169,55 +101,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
-  <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- Custom CSS for Login Page -->
   <style>
     body {
-      background: #f0f2f5; /* A light grey background */
-      /* You can use a background image instead, e.g.: */
-      /* background-image: url('assets/img/login-bg.jpg'); */
-      /* background-size: cover; */
-      /* background-position: center; */
-      /* filter: grayscale(50%); /* Optional: for a desaturated look */
+      background: #f0f2f5;
     }
 
     .register.section {
-      background: none; /* Override any background set by the template */
+      background: none;
     }
 
     .card {
-      border-radius: 10px; /* Slightly rounded corners for the card */
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Softer, more pronounced shadow */
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .card-title {
-      color: #012970; /* Match primary brand color */
+      color: #012970;
       font-weight: 700;
     }
 
     .btn-primary {
-      background-color: #012970; /* Primary brand color for the button */
+      background-color: #012970;
       border-color: #012970;
     }
 
     .btn-primary:hover {
-      background-color: #02388c; /* Slightly darker on hover */
+      background-color: #02388c;
       border-color: #02388c;
     }
 
     .input-group-text {
-      background-color: #f8f9fa; /* Light background for the username icon */
+      background-color: #f8f9fa;
       border-color: #ced4da;
     }
 
-    /* Adjust logo and title styling if needed for better contrast on new background */
     .logo span {
-      color: #012970; /* Ensure logo text is visible */
+      color: #012970;
     }
 
-    /* Optional: Style for the "Don't have an account?" link */
     .small a {
       color: #012970;
       font-weight: 600;
@@ -241,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <img src="assets/img/logo.png" alt="">
                   <span class="d-none d-lg-block">Courier System</span>
                 </a>
-              </div><!-- End Logo -->
+              </div>
 
               <div class="card mb-3">
 
@@ -254,11 +177,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                   <form class="row g-3 needs-validation" novalidate action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
                     <?php if (!empty($login_err)) { ?>
-                        <div class="col-12">
-                            <div class="alert alert-danger" role="alert">
-                                <?php echo $login_err; ?>
-                            </div>
+                      <div class="col-12">
+                        <div class="alert alert-danger" role="alert">
+                          <?php echo $login_err; ?>
                         </div>
+                      </div>
                     <?php } ?>
 
                     <div class="col-12">
@@ -301,11 +224,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </section>
 
     </div>
-  </main><!-- End #main -->
+  </main>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/chart.js/chart.umd.js"></script>
@@ -315,7 +237,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <script src="assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
 
-  <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 
 </body>

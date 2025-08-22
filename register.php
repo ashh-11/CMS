@@ -1,16 +1,11 @@
 <?php
-// register.php - Handles new user registration (customer role or one-time admin creation)
-
-// Include the connections file which handles ob_start(), session_start(), config.php inclusion, and DB connection ($conn).
 require_once 'inc.connections.php';
 
-// Initialize variables for form fields and error/success messages
 $username = $email = $password = $confirm_password = '';
 $username_err = $email_err = $password_err = $confirm_password_err = '';
 $success_message = $general_error = '';
-$is_first_admin_registration = false; // Flag to check if this is the first admin signup
+$is_first_admin_registration = false;
 
-// Check if any admin user already exists
 $sql_check_admin = "SELECT COUNT(*) FROM users WHERE role = 'admin'";
 $result_check_admin = mysqli_query($conn, $sql_check_admin);
 $row_check_admin = mysqli_fetch_row($result_check_admin);
@@ -19,12 +14,11 @@ mysqli_free_result($result_check_admin);
 
 if ($admin_count == 0) {
     $is_first_admin_registration = true;
-    $assigned_role = ROLE_ADMIN; // Assign admin role if no admin exists
+    $assigned_role = ROLE_ADMIN;
 } else {
-    $assigned_role = ROLE_CUSTOMER; // Default to customer role
+    $assigned_role = ROLE_CUSTOMER;
 }
 
-// If user is already logged in, redirect them (e.g., to their dashboard or tracking page)
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     if (isset($_SESSION['role'])) {
         if ($_SESSION['role'] == ROLE_ADMIN) {
@@ -32,7 +26,7 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
         } elseif ($_SESSION['role'] == ROLE_AGENT) {
             header('location: agent_dashboard.php');
         } else {
-            header('location: track_shipment.php'); // Default for customer or unknown role
+            header('location: track_shipment.php');
         }
     } else {
         header('location: track_shipment.php');
@@ -40,38 +34,20 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     exit;
 }
 
-// Process form submission when the form is posted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    // 1. Validate Username (using email as username as per common practice)
     if (empty(trim($_POST['username']))) {
         $username_err = "Please enter a username (your email).";
     } else {
-        $email = trim($_POST['username']); // Assuming username is email
-        // Check if username (email) already exists
-        $sql = "SELECT user_id FROM users WHERE username = ?";
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
-            $param_username = $email;
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_store_result($stmt);
-                if (mysqli_stmt_num_rows($stmt) == 1) {
-                    $username_err = "This username (email) is already taken.";
-                } else {
-                    $username = $email; // Valid and unique username
-                }
-            } else {
-                $general_error = "<div class='alert alert-danger'>Oops! Something went wrong checking username. Please try again later.</div>";
-                error_log("Register user unique check failed: " . mysqli_error($conn));
-            }
-            mysqli_stmt_close($stmt);
+        $email = trim($_POST['username']);
+        $sql = "SELECT user_id FROM users WHERE username = '" . mysqli_real_escape_string($conn, $email) . "'";
+        $result = mysqli_query($conn, $sql);
+        if ($result && mysqli_num_rows($result) == 1) {
+            $username_err = "This username (email) is already taken.";
         } else {
-            $general_error = "<div class='alert alert-danger'>Database error preparing username check. Please try again.</div>";
-            error_log("Register user prepare username check failed: " . mysqli_error($conn));
+            $username = $email;
         }
     }
 
-    // 2. Validate Password
     if (empty(trim($_POST['password']))) {
         $password_err = "Please enter a password.";
     } elseif (strlen(trim($_POST['password'])) < 6) {
@@ -80,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password = trim($_POST['password']);
     }
 
-    // 3. Validate Confirm Password
     if (empty(trim($_POST['confirm_password']))) {
         $confirm_password_err = "Please confirm password.";
     } else {
@@ -90,46 +65,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // 4. Validate Terms and Conditions checkbox
     if (!isset($_POST['terms'])) {
         $general_error = "<div class='alert alert-danger'>You must accept the terms and conditions.</div>";
     }
 
-    // If no validation errors, attempt to insert new user into database
     if (empty($username_err) && empty($password_err) && empty($confirm_password_err) && empty($general_error)) {
-        // Prepare an INSERT statement
-        $sql = "INSERT INTO users (username, password_hash, role, status) VALUES (?, ?, ?, 'active')";
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO users (username, password_hash, role, status) VALUES ('$username', '$hashed_password', '$assigned_role', 'active')";
 
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            // Bind parameters: 's' for username, 's' for hashed password, 's' for role
-            mysqli_stmt_bind_param($stmt, "sss", $param_username, $param_password_hash, $param_role);
-
-            // Set parameters
-            $param_username = $username;
-            // Hash the password securely before storing
-            $param_password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $param_role = $assigned_role; // Use the role determined earlier (admin or customer)
-
-            // Execute the prepared statement
-            if (mysqli_stmt_execute($stmt)) {
-                // Registration successful, redirect to login page with a success message
-                $_SESSION['registration_success'] = "Account created successfully! " .
-                                                    ($assigned_role == ROLE_ADMIN ? "You are the first administrator." : "Please log in with your new customer account.");
-                header('location: login.php');
-                exit;
-            } else {
-                $general_error = "<div class='alert alert-danger'>Something went wrong during registration. Please try again later.</div>";
-                error_log("User insertion failed: " . mysqli_error($conn));
-            }
-            // Close statement
-            mysqli_stmt_close($stmt);
+        if (mysqli_query($conn, $sql)) {
+            $_SESSION['registration_success'] = "Account created successfully! " .
+                                                ($assigned_role == ROLE_ADMIN ? "You are the first administrator." : "Please log in with your new customer account.");
+            header('location: login.php');
+            exit;
         } else {
-            $general_error = "<div class='alert alert-danger'>Database error preparing insert statement.</div>";
-            error_log("Prepare insert statement failed: " . mysqli_error($conn));
+            $general_error = "<div class='alert alert-danger'>Something went wrong during registration: " . mysqli_error($conn) . "</div>";
         }
     }
 }
-// Database connection closed at the end of inc.footer.php (via inc.connections.php)
+if (isset($conn) && $conn) {
+    mysqli_close($conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -143,15 +99,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta content="Register for a new account in the Courier Management System." name="description">
   <meta content="courier, register, signup, account" name="keywords">
 
-  <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
@@ -160,10 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
-  <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- Custom CSS for Register Page -->
   <style>
     body {
       background: #f0f2f5;
@@ -225,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <img src="assets/img/logo.png" alt="">
                   <span class="d-none d-lg-block">Courier System</span>
                 </a>
-              </div><!-- End Logo -->
+              </div>
 
               <div class="card mb-3">
 
@@ -301,11 +252,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </section>
 
     </div>
-  </main><!-- End #main -->
+  </main>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/chart.js/chart.umd.js"></script>
@@ -315,7 +265,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <script src="assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
 
-  <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 
 </body>
