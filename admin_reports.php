@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['generate_report'])) {
                 <div class="col-12 text-center mt-4">
                   <button type="submit" class="btn btn-primary" id="generateReportBtn"><i class="bi bi-file-earmark-bar-graph"></i> Generate Report</button>
                   <?php if ($report_generated && !empty($report_data)) { ?>
-                    <a href="download_report_xlsx.php?reportType=<?php echo htmlspecialchars($_POST['reportType'] ?? ''); ?>&startDate=<?php echo htmlspecialchars($_POST['startDate'] ?? ''); ?>&endDate=<?php echo htmlspecialchars($_POST['endDate'] ?? ''); ?>&selectCity=<?php echo htmlspecialchars($_POST['selectCity'] ?? ''); ?>&selectCompanyId=<?php echo htmlspecialchars($_POST['selectCompanyId'] ?? ''); ?>" class="btn btn-success ms-2" id="downloadReportBtn"><i class="bi bi-download"></i> Download Report (XLSX)</a>
+                    <a href="download_report.php?reportType=<?php echo htmlspecialchars($_POST['reportType'] ?? ''); ?>&startDate=<?php echo htmlspecialchars($_POST['startDate'] ?? ''); ?>&endDate=<?php echo htmlspecialchars($_POST['endDate'] ?? ''); ?>&selectCity=<?php echo htmlspecialchars($_POST['selectCity'] ?? ''); ?>&selectCompanyId=<?php echo htmlspecialchars($_POST['selectCompanyId'] ?? ''); ?>" class="btn btn-success ms-2" id="downloadReportBtn"><i class="bi bi-download"></i> Download Report (XLSX)</a>
                   <?php } ?>
                 </div>
               </form>
