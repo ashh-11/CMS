@@ -83,8 +83,8 @@ if (isset($conn) && $conn) {
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Login - Courier Management System</title>
-  <meta content="Login page for Admin, Agent, and Customer roles in the Courier Management System." name="description">
+  <title>Login - TrackIt Courier</title>
+  <meta content="Login page for Admin, Agent, and Customer roles in the TrackIt Courier." name="description">
   <meta content="courier, login, admin, agent, customer" name="keywords">
 
   <link href="assets/img/favicon.png" rel="icon">

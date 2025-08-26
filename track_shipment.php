@@ -1,25 +1,10 @@
 <?php
-session_start();
-
-$hostname = 'localhost';
-$username_db = 'root';
-$password_db = '';
-$database_name = 'courier_system';
-
-$conn = mysqli_connect($hostname, $username_db, $password_db, $database_name);
-
-if ($conn === false) {
-    die("Database connection FAILED! Error: " . mysqli_connect_error());
-}
-
-mysqli_set_charset($conn, "utf8mb4");
-
 $page_title = "Track Your Shipment";
 $breadcrumbs = [
-    ["Home", "admin_dashboard.php"],
+    ["Home", "user_dashboard.php"],
     ["Track Shipment", "#"]
 ];
-
+$is_public_landing_page = false;
 include('inc.header.php');
 
 $tracking_number = '';
@@ -91,30 +76,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || (isset($_GET['tracking_number']) && 
 }
 ?>
   <main id="main" class="main">
+    <div class="row align-items-center justify-content-center h-100">
 
-    <div class="pagetitle">
-      <h1><?php echo htmlspecialchars($page_title); ?></h1>
-      <nav>
-        <ol class="breadcrumb">
-          <?php foreach ($breadcrumbs as $crumb) { ?>
-            <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($crumb[1]); ?>"><?php echo htmlspecialchars($crumb[0]); ?></a></li>
-          <?php } ?>
-        </ol>
-      </nav>
-    </div>
+      <div class="col-lg-6 main-content-left">
+        <div class="pagetitle">
+          <h1><?php echo htmlspecialchars($page_title); ?></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <?php foreach ($breadcrumbs as $crumb) { ?>
+                <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($crumb[1]); ?>"><?php echo htmlspecialchars($crumb[0]); ?></a></li>
+              <?php } ?>
+            </ol>
+          </nav>
+        </div>
 
-    <section class="section">
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <section class="section">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Enter Tracking Number</h5>
+              <h5 class="card-title" style="color: #5A90D7;">Enter Tracking Number</h5>
               <form class="row g-3" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
                 <div class="col-md-10">
                   <input type="text" class="form-control" id="trackingNumber" name="trackingNumber" placeholder="Enter Consignment Tracking Number" value="<?php echo htmlspecialchars($tracking_number); ?>" required>
                 </div>
                 <div class="col-md-2">
-                  <button type="submit" class="btn btn-primary w-100">Track</button>
+                  <button type="submit" class="btn w-200" style="background-color: #7EB4F2; color: white;">Track</button>
                 </div>
               </form>
 
@@ -124,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || (isset($_GET['tracking_number']) && 
 
               <?php if ($shipment_found) { ?>
               <div id="shipmentDetails">
-                <h5 class="card-title">Shipment Details for: <span id="displayTrackingNumber"><?php echo htmlspecialchars($shipment_data['tracking_number']); ?></span></h5>
+                <h5 class="card-title" style="color: #5A90D7;">Shipment Details for: <span id="displayTrackingNumber"><?php echo htmlspecialchars($shipment_data['tracking_number']); ?></span></h5>
                 <div class="row">
                   <div class="col-md-6">
                     <h6>Sender Info:</h6>
@@ -177,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || (isset($_GET['tracking_number']) && 
                 </div>
 
                 <div class="text-center mt-4">
-                  <a href="print_tracking_details.php?tracking_number=<?php echo htmlspecialchars($shipment_data['tracking_number']); ?>" target="_blank" class="btn btn-secondary">
+                  <a href="print_tracking_details.php?tracking_number=<?php echo htmlspecialchars($shipment_data['tracking_number']); ?>" target="_blank" class="btn btn-secondary" style="background-color: #819CDD; color: white;">
                     <i class="bi bi-printer"></i> Print Tracking Details
                   </a>
                 </div>
@@ -186,10 +171,113 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || (isset($_GET['tracking_number']) && 
 
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </section>
 
+      <div class="col-lg-6 d-flex align-items-center justify-content-center main-content-right">
+        <img src="assets/img/userdash.jpg" alt="Delivery Illustration" class="img-fluid" style="max-height: 80vh;">
+      </div>
+
+    </div>
   </main>
 
 <?php include('inc.footer.php'); ?>
+
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background-color: white; /* Main page background is white */
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #main {
+    flex-grow: 1;
+    display: flex; /* Make main a flex container for its row content */
+    align-items: center; /* Vertically center content */
+    padding: 30px; /* Overall padding for the main area */
+  }
+
+  .main-content-left {
+    background-color: white; /* Left column background, explicit white */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    height: fit-content; /* Adjust height to content */
+  }
+
+  .main-content-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pagetitle h1 {
+    color: #5A90D7;
+    font-weight: 700;
+    text-align: left; /* Align title left */
+    margin-bottom: 15px;
+    font-size: 2.2em;
+  }
+
+  .breadcrumb {
+    justify-content: flex-start; /* Align breadcrumbs left */
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 20px;
+  }
+  .breadcrumb .breadcrumb-item a {
+    color: #7AAEEA;
+  }
+  .breadcrumb .breadcrumb-item.active {
+    color: #5A90D7;
+    font-weight: 600;
+  }
+
+  .btn-primary {
+      background-color: #7EB4F2 !important;
+      border-color: #7EB4F2 !important;
+      font-weight: 600;
+  }
+  .btn-primary:hover {
+      background-color: #5A90D7 !important;
+      border-color: #5A90D7 !important;
+  }
+
+  .btn-secondary {
+      background-color: #819CDD !important;
+      border-color: #819CDD !important;
+      font-weight: 600;
+  }
+  .btn-secondary:hover {
+      background-color: #5A90D7 !important;
+      border-color: #5A90D7 !important;
+  }
+
+  #header .d-flex.align-items-center.justify-content-between .toggle-sidebar-btn {
+      display: none !important;
+  }
+  #header .search-bar {
+      display: none !important;
+  }
+  #header .header-nav .nav-item:not(.pe-3) {
+      display: none !important;
+  }
+  #header .logo span {
+      color: #5A90D7 !important;
+      font-weight: bold;
+  }
+  #header .header-nav .nav-link {
+      color: #5A90D7 !important;
+      font-weight: 600;
+  }
+  #header .header-nav .nav-link:hover {
+      color: #7AAEEA !important;
+  }
+
+  .header-nav .nav-item.d-block.d-lg-none { display: none !important; }
+</style>
