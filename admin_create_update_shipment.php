@@ -241,170 +241,165 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST' && !$shipment_id) {
 }
 ?>
 
-  <?php include('inc.sidebar.php'); ?>
+<?php include('inc.sidebar.php'); ?>
 
-  <main id="main" class="main">
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1><?php echo htmlspecialchars($form_title); ?></h1>
+    <nav>
+      <ol class="breadcrumb">
+        <?php foreach ($breadcrumbs as $crumb) { ?>
+          <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($crumb[1]); ?>"><?php echo htmlspecialchars($crumb[0]); ?></a></li>
+        <?php } ?>
+      </ol>
+    </nav>
+  </div>
 
-    <div class="pagetitle">
-      <h1><?php echo htmlspecialchars($form_title); ?></h1>
-      <nav>
-        <ol class="breadcrumb">
-          <?php foreach ($breadcrumbs as $crumb) { ?>
-            <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($crumb[1]); ?>"><?php echo htmlspecialchars($crumb[0]); ?></a></li>
-          <?php } ?>
-        </ol>
-      </nav>
-    </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><?php echo htmlspecialchars($form_title); ?></h5>
+            <p><?php echo htmlspecialchars($form_description); ?></p>
+            <?php echo $success_message; ?>
+            <?php echo $error_message; ?>
 
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
+            <form class="row g-3" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+              <input type="hidden" name="shipment_id" value="<?php echo htmlspecialchars($shipment_id ?? ''); ?>">
+              <input type="hidden" name="tracking_number_hidden" value="<?php echo htmlspecialchars($tracking_number ?? ''); ?>">
 
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title"><?php echo htmlspecialchars($form_title); ?></h5>
-              <p><?php echo htmlspecialchars($form_description); ?></p>
-
-              <?php echo $success_message; ?>
-              <?php echo $error_message; ?>
-
-              <form class="row g-3" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
-                <input type="hidden" name="shipment_id" value="<?php echo htmlspecialchars($shipment_id ?? ''); ?>">
-                <input type="hidden" name="tracking_number_hidden" value="<?php echo htmlspecialchars($tracking_number ?? ''); ?>">
-
-
-                <div class="col-md-6">
-                  <h6 class="mt-3">Sender Details</h6>
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="senderName" name="sender_name" placeholder="Sender Name" value="<?php echo htmlspecialchars($sender_name); ?>" required>
-                    <label for="senderName">Sender Name</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="senderPhone" name="sender_phone" placeholder="Sender Phone" value="<?php echo htmlspecialchars($sender_phone); ?>" required>
-                    <label for="senderPhone">Sender Phone</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <textarea class="form-control" placeholder="Sender Address" id="senderAddress" name="sender_address" style="height: 80px;" required><?php echo htmlspecialchars($sender_address); ?></textarea>
-                    <label for="senderAddress">Sender Address</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="senderCity" name="sender_city" placeholder="Sender City" value="<?php echo htmlspecialchars($sender_city); ?>" required>
-                    <label for="senderCity">Sender City</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <select class="form-select" id="fromLocation" name="from_location_id" aria-label="From Location" required>
-                      <option value="" disabled <?php echo empty($from_location_id) ? 'selected' : ''; ?>>Select Origin Branch</option>
-                      <?php foreach ($locations as $loc) { ?>
-                        <option value="<?php echo htmlspecialchars($loc['location_id']); ?>" <?php echo ($from_location_id == $loc['location_id']) ? 'selected' : ''; ?>>
-                          <?php echo htmlspecialchars($loc['city_name']); ?>
-                        </option>
-                      <?php } ?>
-                    </select>
-                    <label for="fromLocation">From Location (Branch)</label>
-                  </div>
+              <div class="col-md-6">
+                <h6 class="mt-3">Sender Details</h6>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="senderName" name="sender_name" placeholder="Sender Name" value="<?php echo htmlspecialchars($sender_name); ?>" required>
+                  <label for="senderName">Sender Name</label>
                 </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="senderPhone" name="sender_phone" placeholder="Sender Phone" value="<?php echo htmlspecialchars($sender_phone); ?>" required>
+                  <label for="senderPhone">Sender Phone</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <textarea class="form-control" placeholder="Sender Address" id="senderAddress" name="sender_address" style="height: 80px;" required><?php echo htmlspecialchars($sender_address); ?></textarea>
+                  <label for="senderAddress">Sender Address</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="senderCity" name="sender_city" placeholder="Sender City" value="<?php echo htmlspecialchars($sender_city); ?>" required>
+                  <label for="senderCity">Sender City</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="fromLocation" name="from_location_id" aria-label="From Location" required>
+                    <option value="" disabled <?php echo empty($from_location_id) ? 'selected' : ''; ?>>Select Origin Branch</option>
+                    <?php foreach ($locations as $loc) { ?>
+                      <option value="<?php echo htmlspecialchars($loc['location_id']); ?>" <?php echo ($from_location_id == $loc['location_id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($loc['city_name']); ?>
+                      </option>
+                    <?php } ?>
+                  </select>
+                  <label for="fromLocation">From Location (Branch)</label>
+                </div>
+              </div>
 
-                <div class="col-md-6">
-                  <h6 class="mt-3">Receiver Details</h6>
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="receiverName" name="receiver_name" placeholder="Receiver Name" value="<?php echo htmlspecialchars($receiver_name); ?>" required>
-                    <label for="receiverName">Receiver Name</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="receiverPhone" name="receiver_phone" placeholder="Receiver Phone" value="<?php echo htmlspecialchars($receiver_phone); ?>" required>
-                    <label for="receiverPhone">Receiver Phone</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <textarea class="form-control" placeholder="Receiver Address" id="receiverAddress" name="receiver_address" style="height: 80px;" required><?php echo htmlspecialchars($receiver_address); ?></textarea>
-                    <label for="receiverAddress">Receiver Address</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="receiverCity" name="receiver_city" placeholder="Receiver City" value="<?php echo htmlspecialchars($receiver_city); ?>" required>
-                    <label for="receiverCity">Receiver City</label>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <select class="form-select" id="toLocation" name="to_location_id" aria-label="To Location" required>
-                      <option value="" disabled <?php echo empty($to_location_id) ? 'selected' : ''; ?>>Select Destination Branch</option>
-                      <?php foreach ($locations as $loc) { ?>
-                        <option value="<?php echo htmlspecialchars($loc['location_id']); ?>" <?php echo ($to_location_id == $loc['location_id']) ? 'selected' : ''; ?>>
-                          <?php echo htmlspecialchars($loc['city_name']); ?>
-                        </option>
-                      <?php } ?>
-                    </select>
-                    <label for="toLocation">To Location (Branch)</label>
-                  </div>
+              <div class="col-md-6">
+                <h6 class="mt-3">Receiver Details</h6>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="receiverName" name="receiver_name" placeholder="Receiver Name" value="<?php echo htmlspecialchars($receiver_name); ?>" required>
+                  <label for="receiverName">Receiver Name</label>
                 </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="receiverPhone" name="receiver_phone" placeholder="Receiver Phone" value="<?php echo htmlspecialchars($receiver_phone); ?>" required>
+                  <label for="receiverPhone">Receiver Phone</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <textarea class="form-control" placeholder="Receiver Address" id="receiverAddress" name="receiver_address" style="height: 80px;" required><?php echo htmlspecialchars($receiver_address); ?></textarea>
+                  <label for="receiverAddress">Receiver Address</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="receiverCity" name="receiver_city" placeholder="Receiver City" value="<?php echo htmlspecialchars($receiver_city); ?>" required>
+                  <label for="receiverCity">Receiver City</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="toLocation" name="to_location_id" aria-label="To Location" required>
+                    <option value="" disabled <?php echo empty($to_location_id) ? 'selected' : ''; ?>>Select Destination Branch</option>
+                    <?php foreach ($locations as $loc) { ?>
+                      <option value="<?php echo htmlspecialchars($loc['location_id']); ?>" <?php echo ($to_location_id == $loc['location_id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($loc['city_name']); ?>
+                      </option>
+                    <?php } ?>
+                  </select>
+                  <label for="toLocation">To Location (Branch)</label>
+                </div>
+              </div>
 
-                <div class="col-12">
-                  <hr>
-                  <h6 class="mt-3">Shipment Details</h6>
-                </div>
+              <div class="col-12">
+                <hr>
+                <h6 class="mt-3">Shipment Details</h6>
+              </div>
 
-                <div class="col-md-4">
-                  <div class="form-floating mb-3">
-                    <select class="form-select" id="courierType" name="courier_type" aria-label="Courier Type" required>
-                      <option value="" disabled <?php echo empty($courier_type) ? 'selected' : ''; ?>>Select Type</option>
-                      <option value="Standard" <?php echo ($courier_type == 'Standard') ? 'selected' : ''; ?>>Standard</option>
-                      <option value="Express" <?php echo ($courier_type == 'Express') ? 'selected' : ''; ?>>Express</option>
-                      <option value="Document" <?php echo ($courier_type == 'Document') ? 'selected' : ''; ?>>Document</option>
-                      <option value="Parcel" <?php echo ($courier_type == 'Parcel') ? 'selected' : ''; ?>>Parcel</option>
-                    </select>
-                    <label for="courierType">Courier Type</label>
-                  </div>
+              <div class="col-md-4">
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="courierType" name="courier_type" aria-label="Courier Type" required>
+                    <option value="" disabled <?php echo empty($courier_type) ? 'selected' : ''; ?>>Select Type</option>
+                    <option value="Standard" <?php echo ($courier_type == 'Standard') ? 'selected' : ''; ?>>Standard</option>
+                    <option value="Express" <?php echo ($courier_type == 'Express') ? 'selected' : ''; ?>>Express</option>
+                    <option value="Document" <?php echo ($courier_type == 'Document') ? 'selected' : ''; ?>>Document</option>
+                    <option value="Parcel" <?php echo ($courier_type == 'Parcel') ? 'selected' : ''; ?>>Parcel</option>
+                  </select>
+                  <label for="courierType">Courier Type</label>
                 </div>
-                <div class="col-md-4">
-                  <div class="form-floating mb-3">
-                    <input type="date" class="form-control" id="deliveryDate" name="delivery_date" value="<?php echo htmlspecialchars($delivery_date); ?>" required>
-                    <label for="deliveryDate">Delivery Date</label>
-                  </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating mb-3">
+                  <input type="date" class="form-control" id="deliveryDate" name="delivery_date" value="<?php echo htmlspecialchars($delivery_date); ?>" required>
+                  <label for="deliveryDate">Delivery Date</label>
                 </div>
-                <div class="col-md-4">
-                  <div class="form-floating mb-3">
-                    <select class="form-select" id="courierCompany" name="company_id" aria-label="Courier Company" required>
-                      <option value="" disabled <?php echo empty($company_id) ? 'selected' : ''; ?>>Select Company</option>
-                      <?php foreach ($courier_companies as $comp) { ?>
-                        <option value="<?php echo htmlspecialchars($comp['company_id']); ?>" <?php echo ($company_id == $comp['company_id']) ? 'selected' : ''; ?>>
-                          <?php echo htmlspecialchars($comp['company_name']); ?>
-                        </option>
-                      <?php } ?>
-                    </select>
-                    <label for="courierCompany">Courier Company</label>
-                  </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="courierCompany" name="company_id" aria-label="Courier Company" required>
+                    <option value="" disabled <?php echo empty($company_id) ? 'selected' : ''; ?>>Select Company</option>
+                    <?php foreach ($courier_companies as $comp) { ?>
+                      <option value="<?php echo htmlspecialchars($comp['company_id']); ?>" <?php echo ($company_id == $comp['company_id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($comp['company_name']); ?>
+                      </option>
+                    <?php } ?>
+                  </select>
+                  <label for="courierCompany">Courier Company</label>
                 </div>
+              </div>
 
-                <div class="col-md-6">
-                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="trackingNumber" name="tracking_number" placeholder="Auto-generated or Enter" value="<?php echo htmlspecialchars($tracking_number); ?>" readonly>
-                    <label for="trackingNumber">Tracking Number (Auto-Generated)</label>
-                  </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="trackingNumber" name="tracking_number" placeholder="Auto-generated or Enter" value="<?php echo htmlspecialchars($tracking_number); ?>" readonly>
+                  <label for="trackingNumber">Tracking Number (Auto-Generated)</label>
                 </div>
-                <div class="col-md-6">
-                  <div class="form-floating mb-3">
-                    <select class="form-select" id="currentStatus" name="current_status" aria-label="Current Status" required>
-                      <option value="shipment_booked" <?php echo ($current_status == 'shipment_booked') ? 'selected' : ''; ?>>Shipment Booked</option>
-                      <option value="in_transit" <?php echo ($current_status == 'in_transit') ? 'selected' : ''; ?>>In Transit</option>
-                      <option value="out_for_delivery" <?php echo ($current_status == 'out_for_delivery') ? 'selected' : ''; ?>>Out for Delivery</option>
-                      <option value="delivered" <?php echo ($current_status == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
-                      <option value="returned" <?php echo ($current_status == 'returned') ? 'selected' : ''; ?>>Returned</option>
-                      <option value="on_hold" <?php echo ($current_status == 'on_hold') ? 'selected' : ''; ?>>On Hold</option>
-                    </select>
-                    <label for="currentStatus">Current Status</label>
-                  </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="currentStatus" name="current_status" aria-label="Current Status" required>
+                    <option value="shipment_booked" <?php echo ($current_status == 'shipment_booked') ? 'selected' : ''; ?>>Shipment Booked</option>
+                    <option value="in_transit" <?php echo ($current_status == 'in_transit') ? 'selected' : ''; ?>>In Transit</option>
+                    <option value="out_for_delivery" <?php echo ($current_status == 'out_for_delivery') ? 'selected' : ''; ?>>Out for Delivery</option>
+                    <option value="delivered" <?php echo ($current_status == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
+                    <option value="returned" <?php echo ($current_status == 'returned') ? 'selected' : ''; ?>>Returned</option>
+                    <option value="on_hold" <?php echo ($current_status == 'on_hold') ? 'selected' : ''; ?>>On Hold</option>
+                  </select>
+                  <label for="currentStatus">Current Status</label>
                 </div>
+              </div>
 
-                <div class="text-center mt-4">
-                  <button type="submit" class="btn btn-primary"><?php echo htmlspecialchars($submit_button_text); ?></button>
-                  <button type="reset" class="btn btn-secondary">Reset Form</button>
-                </div>
-              </form>
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary"><?php echo htmlspecialchars($submit_button_text); ?></button>
+                <button type="reset" class="btn btn-secondary">Reset Form</button>
+              </div>
+            </form>
 
-            </div>
           </div>
-
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
+</main>
 
 <?php include('inc.footer.php'); ?>

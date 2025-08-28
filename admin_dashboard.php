@@ -104,9 +104,9 @@ if (empty(array_filter($chart_data_for_display))) {
     $chart_labels = array_keys($chart_data_for_display);
     $chart_counts = array_values(array_map('intval', $chart_data_for_display));
     $chart_background_colors = [
-        '#3B428A',
+        '#5A90D7',
         '#FE6A53',
-        '#F5C3B3',
+        '#7AAEEA',
         '#B77253',
         '#819CDD'
     ];
@@ -138,7 +138,7 @@ if (empty(array_filter($chart_data_for_display))) {
                 <div class="card-body">
                   <h5 class="card-title" style="color: #3B428A;">Total Branches</h5>
                   <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #F5C3B3;">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #E5D1CF;">
                       <i class="bi bi-building" style="color: #FE6A53;"></i>
                     </div>
                     <div class="ps-3">
@@ -151,12 +151,12 @@ if (empty(array_filter($chart_data_for_display))) {
             </div>
 
             <div class="col-xxl-4 col-md-4">
-              <div class="card info-card revenue-card" style="border-left: 5px solid #3B428A;">
+              <div class="card info-card revenue-card" style="border-left: 5px solid #5A90D7;">
                 <div class="card-body">
                   <h5 class="card-title" style="color: #3B428A;">Total Parcels</h5>
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #D7E1EE;">
-                      <i class="bi bi-boxes" style="color: #3B428A;"></i>
+                      <i class="bi bi-boxes" style="color: #5A90D7;"></i>
                     </div>
                     <div class="ps-3">
                       <h6><?php echo htmlspecialchars($total_parcels); ?></h6>
@@ -168,12 +168,12 @@ if (empty(array_filter($chart_data_for_display))) {
             </div>
 
             <div class="col-xxl-4 col-md-4">
-              <div class="card info-card customers-card" style="border-left: 5px solid #B77253;">
+              <div class="card info-card customers-card" style="border-left: 5px solid #819CDD;">
                 <div class="card-body">
                   <h5 class="card-title" style="color: #3B428A;">Total Staff</h5>
                   <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #EDE6E0;">
-                      <i class="bi bi-people" style="color: #B77253;"></i>
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #E5D1CF;">
+                      <i class="bi bi-people" style="color: #819CDD;"></i>
                     </div>
                     <div class="ps-3">
                       <h6><?php echo htmlspecialchars($total_staff); ?></h6>
@@ -246,9 +246,9 @@ if (empty(array_filter($chart_data_for_display))) {
   html, body {
     height: 100%;
     margin: 0;
-    background-color: #E8EAEC;
+    background-color: white; /* No background image, solid white */
     font-family: 'Open Sans', sans-serif;
-    color: #212B3F;
+    color: #3B428A;
   }
 
   body {
@@ -260,12 +260,12 @@ if (empty(array_filter($chart_data_for_display))) {
     flex-grow: 1;
     padding: 30px;
     background-color: #FFFFFF;
-    margin-top: 20px;
+    margin-top: calc(70px + 30px); /* Height of header (approx 70px) + desired gap (30px) */
     margin-bottom: 20px;
     margin-right: 20px;
     margin-left: calc(280px + 30px);
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(33, 43, 63, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     max-width: calc(100% - (280px + 30px + 20px));
   }
 
@@ -276,7 +276,7 @@ if (empty(array_filter($chart_data_for_display))) {
 
 
   .pagetitle h1 {
-    color: #212B3F;
+    color: #3B428A;
     font-weight: 700;
     text-align: left;
     margin-bottom: 15px;
@@ -291,37 +291,37 @@ if (empty(array_filter($chart_data_for_display))) {
     font-size: 0.9em;
   }
   .breadcrumb .breadcrumb-item a {
-    color: #556F7A;
+    color: #7AAEEA;
   }
   .breadcrumb .breadcrumb-item.active {
-    color: #212B3F;
+    color: #5A90D7;
     font-weight: 600;
   }
 
   .card {
     border: none;
-    box-shadow: 0 5px 15px rgba(33, 43, 63, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     border-radius: 15px;
     background-color: #FFFFFF;
   }
 
   .card-title {
-    color: #212B3F;
+    color: #3B428A;
     font-weight: 700;
     margin-bottom: 20px;
     font-size: 1.5em;
   }
   .card-body h5 {
-      color: #212B3F;
+      color: #3B428A;
   }
   .card-body h6 {
-    color: #212B3F;
+    color: #3B428A;
     font-weight: 600;
     margin-top: 15px;
     margin-bottom: 10px;
   }
   .card-body p {
-    margin-bottom: 5px;
+    color: #819CDD;
     font-size: 0.95em;
   }
   .card-body strong {
@@ -329,140 +329,83 @@ if (empty(array_filter($chart_data_for_display))) {
   }
 
   hr {
-    border-top: 1px solid #F5C3B3;
+    border-top: 1px solid #E5D1CF;
     margin-top: 30px;
     margin-bottom: 30px;
   }
 
-  .table th, .table td {
-      color: #212B3F;
+  .table thead th {
+    background-color: #5A90D7;
+    color: #FFFFFF;
+    font-weight: 700;
   }
   .table-striped tbody tr:nth-of-type(odd) {
-      background-color: #D8E6E8;
+      background-color: #F0F2F5;
+  }
+  .table tbody tr {
+      color: #3B428A;
   }
 
   .btn {
-    font-weight: 500;
-    border-radius: 5px;
-    padding: 6px 10px;
-    margin-right: 5px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 10px 20px;
   }
-  .btn i {
-    margin-right: 5px;
+  .btn-primary {
+    background-color: #7AAEEA !important;
+    border-color: #7AAEEA !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 8px rgba(90, 144, 215, 0.2);
   }
-
-  .custom-btn-primary {
-      background-color: #212B3F !important;
-      border-color: #212B3F !important;
+  .btn-primary:hover {
+    background-color: #5A90D7 !important;
+    border-color: #5A90D7 !important;
+    box-shadow: 0 6px 12px rgba(90, 144, 215, 0.3);
+  }
+  .btn-secondary {
+      background-color: #819CDD !important;
+      border-color: #819CDD !important;
       color: #FFFFFF !important;
-      padding: 10px 20px;
-      font-size: 1.05em;
-      box-shadow: 0 4px 8px rgba(33, 43, 63, 0.15);
+      box-shadow: 0 4px 8px rgba(129, 156, 221, 0.2);
   }
-  .custom-btn-primary:hover {
-      background-color: #556F7A !important;
-      border-color: #556F7A !important;
-      box-shadow: 0 6px 12px rgba(33, 43, 63, 0.2);
-  }
-
-  .custom-btn-action-edit {
-      background-color: #8AD2B1;
-      border-color: #8AD2B1;
-      color: #212B3F;
-      padding: 4px 8px;
-      font-size: 0.85em;
-  }
-  .custom-btn-action-edit:hover {
-      background-color: #556F7A;
-      border-color: #556F7A;
-      color: #FFFFFF;
-  }
-
-  .custom-btn-action-delete {
-      background-color: #C26433;
-      border-color: #C26433;
-      color: #FFFFFF;
-      padding: 4px 8px;
-      font-size: 0.85em;
-  }
-  .custom-btn-action-delete:hover {
-      background-color: #FE6A53;
-      border-color: #FE6A53;
-  }
-
-  .custom-btn-action-print {
-      background-color: #798086;
-      border-color: #798086;
-      color: #FFFFFF;
-      padding: 4px 8px;
-      font-size: 0.85em;
-  }
-  .custom-btn-action-print:hover {
-      background-color: #556F7A;
-      border-color: #556F7A;
+  .btn-secondary:hover {
+      background-color: #5A90D7 !important;
+      border-color: #5A90D7 !important;
+      box-shadow: 0 6px 12px rgba(90, 144, 215, 0.3);
   }
 
   .badge {
-    padding: 0.4em 0.7em;
-    border-radius: 4px;
     font-weight: 600;
-    font-size: 0.8em;
     text-transform: capitalize;
-    color: #FFFFFF;
   }
-  .status-badge-delivered { background-color: #8AD2B1; color: #212B3F; }
-  .status-badge-intransit { background-color: #556F7A; }
-  .status-badge-outfordelivery { background-color: #2E6171; }
-  .status-badge-booked { background-color: #798086; }
-  .status-badge-onhold { background-color: #FE6A53; }
-  .status-badge-returned { background-color: #B79FAD; }
-  .status-badge-default { background-color: #798086; }
+  .bg-success { background-color: #7AAEEA !important; }
+  .bg-warning { background-color: #FE6A53 !important; }
+  .bg-primary { background-color: #5A90D7 !important; }
+  .bg-secondary { background-color: #B77253 !important; }
+  .bg-danger { background-color: #FE6A53 !important; }
+  .bg-info { background-color: #819CDD !important; }
 
 
-  #header .logo span {
-      color: #8AD2B1 !important;
-      font-weight: bold;
+  #header .logo svg path,
+  #header .logo svg rect {
+      fill: #FFFFFF !important;
   }
-  #header .logo i {
-      color: #8AD2B1;
+  #header .logo svg text {
+      fill: #FFFFFF !important;
   }
-  #header .header-nav .nav-link {
-      color: #E8EAEC !important;
-      font-weight: 500;
+  #header .logo:hover svg path,
+  #header .logo:hover svg rect,
+  #header .logo:hover svg text {
+      fill: #E5D1CF !important;
   }
-  #header .header-nav .nav-link:hover {
-      color: #D4AFCD !important;
-  }
-  #header .nav-profile .dropdown-toggle {
-      color: #8AD2B1 !important;
-  }
-  #header .dropdown-menu {
-      background-color: #212B3F;
-      border: 1px solid #556F7A;
-  }
-  #header .dropdown-menu .dropdown-header h6,
-  #header .dropdown-menu .dropdown-header span {
-      color: #D4AFCD;
-  }
-  #header .dropdown-menu .dropdown-item {
-      color: #E8EAEC;
-  }
-  #header .dropdown-menu .dropdown-item:hover {
-      background-color: #556F7A;
+
+  #header .toggle-sidebar-btn {
       color: #FFFFFF;
   }
-  #header .dropdown-menu .dropdown-item i {
-      color: #B79FAD;
+  #header .toggle-sidebar-btn:hover {
+      color: #E5D1CF;
   }
 
-  .search-bar {
-      border-radius: 8px;
-      background-color: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-  }
   .search-bar input {
       color: #FFFFFF;
       background: transparent;
@@ -474,61 +417,97 @@ if (empty(array_filter($chart_data_for_display))) {
   .search-bar button {
       background: transparent;
       border: none;
-      color: #8AD2B1;
+      color: #E5D1CF;
   }
   .search-bar button:hover {
-      color: #D4AFCD;
-  }
-
-  .notifications .notification-item i {
-      color: #B79FAD;
-  }
-  .notifications .notification-item h4 {
-      color: #E8EAEC;
-  }
-  .notifications .notification-item p {
-      color: #D4AFCD;
-  }
-  .notifications .dropdown-header {
-      background-color: #556F7A;
       color: #FFFFFF;
   }
+
+  #header .header-nav .nav-link {
+      color: #FFFFFF !important;
+  }
+  #header .header-nav .nav-link:hover {
+      color: #E5D1CF !important;
+  }
+  #header .nav-profile .dropdown-toggle {
+      color: #FFFFFF !important;
+  }
+  #header .dropdown-menu {
+      background-color: #5A90D7;
+      border: 1px solid #819CDD;
+  }
+  #header .dropdown-menu .dropdown-header h6,
+  #header .dropdown-menu .dropdown-header span {
+      color: #E5D1CF;
+  }
+  #header .dropdown-menu .dropdown-item {
+      color: #FFFFFF;
+  }
+  #header .dropdown-menu .dropdown-item:hover {
+      background-color: #819CDD;
+      color: #FFFFFF;
+  }
+  #header .dropdown-menu .dropdown-item i {
+      color: #7AAEEA;
+  }
+
   .notifications .badge-number {
       background-color: #FE6A53 !important;
   }
 
   .sidebar {
       background-color: #FFFFFF;
-      border-right: 1px solid #D8E6E8;
+      border-right: 1px solid #E5D1CF;
   }
   .sidebar-nav .nav-link {
-      color: #212B3F;
+      color: #3B428A;
   }
   .sidebar-nav .nav-link:hover {
-      color: #2E6171;
-      background-color: #D8E6E8;
+      color: #5A90D7;
+      background-color: #F0F2F5;
   }
   .sidebar-nav .nav-link.active {
       color: #FFFFFF;
-      background-color: #2E6171;
+      background-color: #5A90D7;
   }
   .sidebar-nav .nav-link.collapsed {
-      color: #556F7A;
+      color: #819CDD;
   }
   .sidebar-nav .nav-link.collapsed:hover {
-      color: #2E6171;
+      color: #5A90D7;
   }
   .sidebar-nav .nav-link.active i, .sidebar-nav .nav-link.collapsed:hover i {
-      color: #8AD2B1;
+      color: #E5D1CF;
   }
   .sidebar-nav .nav-content a {
-      color: #556F7A;
+      color: #819CDD;
   }
   .sidebar-nav .nav-content a:hover, .sidebar-nav .nav-content a.active {
-      color: #2E6171;
-      background-color: #E8EAEC;
+      color: #5A90D7;
+      background-color: #F0F2F5;
   }
   .sidebar-nav .nav-heading {
-      color: #798086;
+      color: #B77253;
   }
-</style>```
+
+  .card.sales-card .card-icon {
+      background: #E5D1CF !important;
+  }
+  .card.sales-card .card-icon i {
+      color: #FE6A53 !important;
+  }
+
+  .card.revenue-card .card-icon {
+      background: rgba(90, 144, 215, 0.2) !important;
+  }
+  .card.revenue-card .card-icon i {
+      color: #5A90D7 !important;
+  }
+
+  .card.customers-card .card-icon {
+      background: rgba(129, 156, 221, 0.2) !important;
+  }
+  .card.customers-card .card-icon i {
+      color: #819CDD !important;
+  }
+</style>

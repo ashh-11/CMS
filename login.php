@@ -32,49 +32,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   if (empty($login_err)) {
-    $sql = "SELECT user_id, username, password_hash, role, location_id FROM users WHERE username = '" . mysqli_real_escape_string($conn, $username) . "'";
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT user_id, username, password_hash, role, location_id FROM users WHERE username = ?";
 
-    if ($result && mysqli_num_rows($result) == 1) {
-      $row = mysqli_fetch_assoc($result);
-      $user_id = $row['user_id'];
-      $stored_username = $row['username'];
-      $hashed_password = $row['password_hash'];
-      $role = $row['role'];
-      $location_id = $row['location_id'];
-      mysqli_free_result($result);
+    if ($stmt = mysqli_prepare($conn, $sql)) {
+      mysqli_stmt_bind_param($stmt, "s", $param_username);
+      $param_username = $username;
+      if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_store_result($stmt);
+        if (mysqli_stmt_num_rows($stmt) == 1) {
+          mysqli_stmt_bind_result($stmt, $user_id, $username, $hashed_password, $role, $location_id);
+          if (mysqli_stmt_fetch($stmt)) {
+            if (password_verify($password, $hashed_password)) {
+              session_regenerate_id(true);
 
-      if (password_verify($password, $hashed_password)) {
-        session_regenerate_id(true);
+              $_SESSION['loggedin'] = true;
+              $_SESSION['user_id'] = $user_id;
+              $_SESSION['username'] = $username;
+              $_SESSION['role'] = $role;
+              $_SESSION['location_id'] = $location_id;
 
-        $_SESSION['loggedin'] = true;
-        $_SESSION['user_id'] = $user_id;
-        $_SESSION['username'] = $stored_username;
-        $_SESSION['role'] = $role;
-        $_SESSION['location_id'] = $location_id;
+              $sql_audit = "INSERT INTO user_login_audit (user_id, login_time, ip_address) VALUES (?, NOW(), ?)";
+              if ($stmt_audit = mysqli_prepare($conn, $sql_audit)) {
+                $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
+                mysqli_stmt_bind_param($stmt_audit, "is", $user_id, $ip_address);
+                mysqli_stmt_execute($stmt_audit);
+                mysqli_stmt_close($stmt_audit);
+              } else {
+                error_log("Failed to prepare user_login_audit statement: " . mysqli_error($conn));
+              }
 
-        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
-        $sql_audit = "INSERT INTO user_login_audit (user_id, login_time, ip_address) VALUES ('$user_id', NOW(), '$ip_address')";
-        mysqli_query($conn, $sql_audit);
-
-        if ($role === ROLE_ADMIN) {
-          header('Location: admin_dashboard.php');
-        } elseif ($role === ROLE_AGENT) {
-          header('Location: agent_dashboard.php');
+              if ($role === ROLE_ADMIN) {
+                header('Location: admin_dashboard.php');
+              } elseif ($role === ROLE_AGENT) {
+                header('Location: agent_dashboard.php');
+              } else {
+                header('Location: track_shipment.php');
+              }
+              exit;
+            } else {
+              $login_err = "Invalid username or password.";
+            }
+          }
         } else {
-          header('Location: track_shipment.php');
+          $login_err = "Invalid username or password.";
         }
-        exit;
       } else {
-        $login_err = "Invalid username or password.";
+        error_log("Login query execution failed: " . mysqli_error($conn));
+        $login_err = "An unexpected error occurred. Please try again later.";
       }
+      mysqli_stmt_close($stmt);
     } else {
-      $login_err = "Invalid username or password.";
+      error_log("Login query preparation failed: " . mysqli_error($conn));
+      $login_err = "An unexpected error occurred. Please try again later.";
     }
   }
-}
-if (isset($conn) && $conn) {
+  if (isset($conn) && $conn) {
     mysqli_close($conn);
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -105,45 +119,140 @@ if (isset($conn) && $conn) {
 
   <style>
     body {
-      background: #f0f2f5;
+      background-color: #819CDD;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Open Sans', sans-serif;
+      color: #3B428A;
     }
 
-    .register.section {
+    .section.register {
       background: none;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .card {
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    .login-container {
+        background-color: #FFFFFF;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 40px;
+        max-width: 1200px; /* Increased max-width to make the image larger */
+        width: 90%;
+        display: flex;
+        overflow: hidden;
     }
+
+    .login-form-col {
+        flex: 1;
+        padding-right: 30px;
+    }
+
+    .login-image-col {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 30px;
+    }
+    .login-image-col img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 10px;
+    }
+
+
+    .logo-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .logo-container .logo {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .logo-container .logo svg path,
+    .logo-container .logo svg rect {
+        fill: #3B428A !important;
+    }
+    .logo-container .logo svg text {
+        fill: #3B428A !important;
+    }
+    .logo-container .logo:hover svg path,
+    .logo-container .logo:hover svg rect,
+    .logo-container .logo:hover svg text {
+        fill: #5A90D7 !important;
+    }
+    .logo-container .logo span {
+        display: none;
+    }
+
 
     .card-title {
-      color: #012970;
+      color: #3B428A;
       font-weight: 700;
+      margin-bottom: 20px;
+      font-size: 1.8em;
     }
 
     .btn-primary {
-      background-color: #012970;
-      border-color: #012970;
+      background-color: #7AAEEA !important;
+      border-color: #7AAEEA !important;
+      font-weight: 600;
     }
 
     .btn-primary:hover {
-      background-color: #02388c;
-      border-color: #02388c;
+      background-color: #5A90D7 !important;
+      border-color: #5A90D7 !important;
     }
 
     .input-group-text {
-      background-color: #f8f9fa;
-      border-color: #ced4da;
+      background-color: #E5D1CF;
+      border-color: #819CDD;
+      color: #5A90D7;
+    }
+    .form-control:focus {
+        border-color: #7AAEEA !important;
+        box-shadow: 0 0 0 0.25rem rgba(122, 174, 234, 0.25) !important;
+    }
+    .form-control.is-invalid {
+        border-color: #FE6A53 !important;
+    }
+    .invalid-feedback {
+        color: #FE6A53;
     }
 
-    .logo span {
-      color: #012970;
-    }
 
     .small a {
-      color: #012970;
+      color: #7AAEEA;
       font-weight: 600;
+    }
+    .small a:hover {
+        color: #5A90D7;
+    }
+
+    #header { display: none !important; }
+    #footer { display: none !important; }
+    .back-to-top { display: none !important; }
+
+    @media (max-width: 992px) {
+        .login-container {
+            flex-direction: column;
+            padding: 30px;
+        }
+        .login-form-col {
+            padding-right: 0;
+            padding-bottom: 30px;
+        }
+        .login-image-col {
+            padding-left: 0;
+        }
     }
   </style>
 
@@ -157,62 +266,70 @@ if (isset($conn) && $conn) {
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
           <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+            <div class="col-lg-10 d-flex flex-column align-items-center justify-content-center">
 
-              <div class="d-flex justify-content-center py-4">
-                <a href="index.html" class="logo d-flex align-items-center w-auto">
-                  <img src="assets/img/logo.png" alt="">
-                  <span class="d-none d-lg-block">Courier System</span>
-                </a>
-              </div>
+              <div class="login-container">
+                <div class="login-form-col">
+                    <div class="logo-container">
+                        <a href="index.html" class="logo">
+                          <svg width="180" height="35" viewBox="0 0 180 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.9 0C7.16 0 0 7.02 0 15.6C0 24.18 15.9 35 15.9 35S31.8 24.18 31.8 15.6C31.8 7.02 24.64 0 15.9 0ZM15.9 21.28A5.68 5.68 0 1 1 15.9 10.12 5.68 5.68 0 0 1 15.9 21.28Z" fill="#3B428A"/>
+                            <rect x="12" y="12" width="7" height="7" fill="#FE6A53"/>
+                            <text x="35" y="23" font-family="Nunito, sans-serif" font-size="22" font-weight="900" fill="#3B428A">TrackIt</text>
+                            <text x="110" y="23" font-family="Nunito, sans-serif" font-size="18" fill="#FE6A53">Couriers</text>
+                          </svg>
+                        </a>
+                    </div>
 
-              <div class="card mb-3">
+                    <div class="pt-4 pb-2">
+                      <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                      <p class="text-center small">Enter your username & password to login</p>
+                    </div>
 
-                <div class="card-body">
+                    <form class="row g-3 needs-validation" novalidate action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+                      <?php if (!empty($login_err)) { ?>
+                        <div class="col-12">
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo $login_err; ?>
+                            </div>
+                        </div>
+                      <?php } ?>
 
-                  <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                    <p class="text-center small">Enter your username & password to login</p>
-                  </div>
-
-                  <form class="row g-3 needs-validation" novalidate action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-                    <?php if (!empty($login_err)) { ?>
                       <div class="col-12">
-                        <div class="alert alert-danger" role="alert">
-                          <?php echo $login_err; ?>
+                        <label for="yourUsername" class="form-label">Username</label>
+                        <div class="input-group has-validation">
+                          <span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-person"></i></span>
+                          <input type="text" name="username" class="form-control <?php echo (!empty($login_err)) ? 'is-invalid' : ''; ?>" id="yourUsername" value="<?php echo htmlspecialchars($username); ?>" required>
+                          <div class="invalid-feedback">Please enter your username.</div>
                         </div>
                       </div>
-                    <?php } ?>
 
-                    <div class="col-12">
-                      <label for="yourUsername" class="form-label">Username</label>
-                      <div class="input-group has-validation">
-                        <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="username" class="form-control <?php echo (!empty($login_err)) ? 'is-invalid' : ''; ?>" id="yourUsername" value="<?php echo htmlspecialchars($username); ?>" required>
-                        <div class="invalid-feedback">Please enter your username.</div>
+                      <div class="col-12">
+                        <label for="yourPassword" class="form-label">Password</label>
+                        <div class="input-group has-validation">
+                          <span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-lock"></i></span>
+                          <input type="password" name="password" class="form-control <?php echo (!empty($login_err)) ? 'is-invalid' : ''; ?>" id="yourPassword" required>
+                          <div class="invalid-feedback">Please enter your password!</div>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="col-12">
-                      <label for="yourPassword" class="form-label">Password</label>
-                      <input type="password" name="password" class="form-control <?php echo (!empty($login_err)) ? 'is-invalid' : ''; ?>" id="yourPassword" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
-                    </div>
-
-                    <div class="col-12">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                      <div class="col-12">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
+                          <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Login</button>
-                    </div>
-                    <div class="col-12">
-                      <p class="small mb-0">Don't have an account? <a href="register.php">Create an account</a></p>
-                    </div>
-                  </form>
+                      <div class="col-12">
+                        <button class="btn btn-primary w-100" type="submit">Login</button>
+                      </div>
+                      <div class="col-12">
+                        <p class="small mb-0">Don't have an account? <a href="register.php">Create an account</a></p>
+                      </div>
+                    </form>
+                </div>
 
+                <div class="login-image-col d-none d-md-flex">
+                    <img src="assets/img/expdel.png" alt="Delivery Illustration">
                 </div>
               </div>
 
@@ -225,8 +342,6 @@ if (isset($conn) && $conn) {
 
     </div>
   </main>
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
