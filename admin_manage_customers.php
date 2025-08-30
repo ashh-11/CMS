@@ -22,6 +22,7 @@ $customers = [];
 $success_message = '';
 $error_message = '';
 
+// Handle delete action
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $delete_id = mysqli_real_escape_string($conn, trim($_GET['id']));
 
@@ -33,6 +34,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
+// Handle modal form (add / edit)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_type']) && $_POST['form_type'] == 'customer_modal') {
     $customer_id_val = mysqli_real_escape_string($conn, trim($_POST['modalCustomerId'] ?? ''));
     $full_name = mysqli_real_escape_string($conn, $_POST['modalCustomerName']);
@@ -62,9 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_type']) && $_POST
     }
 }
 
-$sql_customers = "SELECT customer_id, full_name, phone_number, email, address, city FROM customers ORDER BY full_name ASC";
+// --- SEARCH HANDLING ---
+$search = '';
+$search_sql = '';
+if (isset($_GET['q']) && trim($_GET['q']) !== '') {
+    $search = trim($_GET['q']);
+    // escape for SQL
+    $search_esc = mysqli_real_escape_string($conn, $search);
+    // search across multiple columns
+    $search_sql = " WHERE full_name LIKE '%$search_esc%' OR phone_number LIKE '%$search_esc%' OR email LIKE '%$search_esc%' OR address LIKE '%$search_esc%' OR city LIKE '%$search_esc%'";
+}
+
+// Fetch customers (with optional search)
+$sql_customers = "SELECT customer_id, full_name, phone_number, email, address, city FROM customers {$search_sql} ORDER BY full_name ASC";
 $result = mysqli_query($conn, $sql_customers);
+$result_count = 0;
 if ($result) {
+    $result_count = mysqli_num_rows($result);
     while ($row = mysqli_fetch_assoc($result)) {
         $customers[] = $row;
     }
@@ -74,125 +90,149 @@ if ($result) {
 }
 ?>
 
-  <?php include('inc.sidebar.php'); ?>
+<?php include('inc.sidebar.php'); ?>
 
-  <main id="main" class="main">
+<main id="main" class="main">
 
-    <div class="pagetitle">
-      <h1><?php echo htmlspecialchars($page_title); ?></h1>
-      <nav>
-        <ol class="breadcrumb">
-          <?php foreach ($breadcrumbs as $crumb) { ?>
-            <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($crumb[1]); ?>"><?php echo htmlspecialchars($crumb[0]); ?></a></li>
-          <?php } ?>
-        </ol>
-      </nav>
-    </div>
+  <div class="pagetitle">
+    <h1><?php echo htmlspecialchars($page_title); ?></h1>
+    <nav>
+      <ol class="breadcrumb">
+        <?php foreach ($breadcrumbs as $crumb) { ?>
+          <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($crumb[1]); ?>"><?php echo htmlspecialchars($crumb[0]); ?></a></li>
+        <?php } ?>
+      </ol>
+    </nav>
+  </div>
 
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
 
-          <div class="card">
-            <div class="card-body">
+        <div class="card">
+          <div class="card-body">
 
-              <?php echo $success_message; ?>
-              <?php echo $error_message; ?>
+            <?php echo $success_message; ?>
+            <?php echo $error_message; ?>
 
-              <div class="d-flex justify-content-end mb-3">
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal" data-customer-id="" title="Add New Customer"><i class="bi bi-plus-circle"></i> Add New Customer</button>
-              </div>
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div style="min-width: 320px;">
+                  <!-- Search form (GET) -->
+                  <form class="d-flex" method="GET" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                    <div class="input-group" style="max-width:520px;">
+                      <input type="text" name="q" class="form-control" id="searchInput" placeholder="Search" value="<?php echo htmlspecialchars($search); ?>" aria-label="Search customers">
+                      <button class="btn btn-primary" type="submit" title="Search"><i class="bi bi-search"></i> Search</button>
+                      <?php if ($search) { ?>
+                        <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="btn btn-secondary ms-2" title="Clear search">Clear</a>
+                      <?php } ?>
+                    </div>
+                  </form>
+                </div>
 
-              <table class="table datatable">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Address</th>
-                    <th scope="col">City</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php if (!empty($customers)) {
-                      $counter = 1;
-                      foreach ($customers as $customer) { ?>
-                        <tr>
-                            <th scope="row"><?php echo htmlspecialchars($counter++); ?></th>
-                            <td><?php echo htmlspecialchars($customer['full_name']); ?></td>
-                            <td><?php echo htmlspecialchars($customer['phone_number']); ?></td>
-                            <td><?php echo htmlspecialchars($customer['email']); ?></td>
-                            <td><?php echo htmlspecialchars($customer['address']); ?></td>
-                            <td><?php echo htmlspecialchars($customer['city']); ?></td>
-                            <td>
-                              <button type="button" class="btn btn-sm btn-info text-white" data-bs-toggle="modal" data-bs-target="#customerModal" data-customer-id="<?php echo htmlspecialchars($customer['customer_id']); ?>"
-                                data-customer-name="<?php echo htmlspecialchars($customer['full_name']); ?>"
-                                data-customer-phone="<?php echo htmlspecialchars($customer['phone_number']); ?>"
-                                data-customer-email="<?php echo htmlspecialchars($customer['email']); ?>"
-                                data-customer-address="<?php echo htmlspecialchars($customer['address']); ?>"
-                                data-customer-city="<?php echo htmlspecialchars($customer['city']); ?>"
-                                title="Edit Customer"><i class="bi bi-pencil"></i></button>
-                              <a href="?action=delete&id=<?php echo htmlspecialchars($customer['customer_id']); ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this customer? This may affect linked shipments.');" title="Delete Customer"><i class="bi bi-trash"></i></a>
-                            </td>
-                        </tr>
-                    <?php }
-                  } else { ?>
-                      <tr><td colspan="7">No customers found.</td></tr>
-                  <?php } ?>
-                </tbody>
-              </table>
-
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal" data-customer-id="" title="Add New Customer"><i class="bi bi-plus-circle"></i> Add New Customer</button>
+                </div>
             </div>
-          </div>
 
+            <!-- Result count / message -->
+            <div class="mb-2">
+              <?php if ($search !== '') { ?>
+                <small class="text-muted">Showing <?php echo (int)$result_count; ?> result(s) for '<strong><?php echo htmlspecialchars($search); ?></strong>'</small>
+              <?php } else { ?>
+                <small class="text-muted">Total customers: <?php echo (int)$result_count; ?></small>
+              <?php } ?>
+            </div>
+
+            <table class="table datatable" id="customersTable">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">City</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($customers)) {
+                    $counter = 1;
+                    foreach ($customers as $customer) { ?>
+                      <tr>
+                          <th scope="row"><?php echo htmlspecialchars($counter++); ?></th>
+                          <td class="td-name"><?php echo htmlspecialchars($customer['full_name']); ?></td>
+                          <td class="td-phone"><?php echo htmlspecialchars($customer['phone_number']); ?></td>
+                          <td class="td-email"><?php echo htmlspecialchars($customer['email']); ?></td>
+                          <td class="td-address"><?php echo htmlspecialchars($customer['address']); ?></td>
+                          <td class="td-city"><?php echo htmlspecialchars($customer['city']); ?></td>
+                          <td>
+                            <button type="button" class="btn btn-sm btn-info text-white" data-bs-toggle="modal" data-bs-target="#customerModal" data-customer-id="<?php echo htmlspecialchars($customer['customer_id']); ?>"
+                              data-customer-name="<?php echo htmlspecialchars($customer['full_name']); ?>"
+                              data-customer-phone="<?php echo htmlspecialchars($customer['phone_number']); ?>"
+                              data-customer-email="<?php echo htmlspecialchars($customer['email']); ?>"
+                              data-customer-address="<?php echo htmlspecialchars($customer['address']); ?>"
+                              data-customer-city="<?php echo htmlspecialchars($customer['city']); ?>"
+                              title="Edit Customer"><i class="bi bi-pencil"></i></button>
+                            <a href="?action=delete&id=<?php echo htmlspecialchars($customer['customer_id']); ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this customer? This may affect linked shipments.');" title="Delete Customer"><i class="bi bi-trash"></i></a>
+                          </td>
+                      </tr>
+                  <?php }
+                } else { ?>
+                    <tr><td colspan="7">No customers found.</td></tr>
+                <?php } ?>
+              </tbody>
+            </table>
+
+          </div>
         </div>
-      </div>
-    </section>
 
-    <div class="modal fade" id="customerModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Add/Edit Customer</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form class="row g-3" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
-              <input type="hidden" name="form_type" value="customer_modal">
-              <input type="hidden" id="modalCustomerId" name="modalCustomerId">
-              <div class="col-md-12">
-                <label for="modalCustomerName" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="modalCustomerName" name="modalCustomerName" required>
-              </div>
-              <div class="col-md-6">
-                <label for="modalCustomerPhone" class="form-label">Phone Number</label>
-                <input type="text" class="form-control" id="modalCustomerPhone" name="modalCustomerPhone" required>
-              </div>
-              <div class="col-md-6">
-                <label for="modalCustomerEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="modalCustomerEmail" name="modalCustomerEmail">
-              </div>
-              <div class="col-12">
-                <label for="modalCustomerAddress" class="form-label">Address</label>
-                <textarea class="form-control" id="modalCustomerAddress" name="modalCustomerAddress" rows="3" required></textarea>
-              </div>
-              <div class="col-md-6">
-                <label for="modalCustomerCity" class="form-label">City</label>
-                <input type="text" class="form-control" id="modalCustomerCity" name="modalCustomerCity" required>
-              </div>
-              <div class="col-12 text-center mt-4">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
-            </form>
-          </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal fade" id="customerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add/Edit Customer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+            <input type="hidden" name="form_type" value="customer_modal">
+            <input type="hidden" id="modalCustomerId" name="modalCustomerId">
+            <div class="col-md-12">
+              <label for="modalCustomerName" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="modalCustomerName" name="modalCustomerName" required>
+            </div>
+            <div class="col-md-6">
+              <label for="modalCustomerPhone" class="form-label">Phone Number</label>
+              <input type="text" class="form-control" id="modalCustomerPhone" name="modalCustomerPhone" required>
+            </div>
+            <div class="col-md-6">
+              <label for="modalCustomerEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="modalCustomerEmail" name="modalCustomerEmail">
+            </div>
+            <div class="col-12">
+              <label for="modalCustomerAddress" class="form-label">Address</label>
+              <textarea class="form-control" id="modalCustomerAddress" name="modalCustomerAddress" rows="3" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label for="modalCustomerCity" class="form-label">City</label>
+              <input type="text" class="form-control" id="modalCustomerCity" name="modalCustomerCity" required>
+            </div>
+            <div class="col-12 text-center mt-4">
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
+  </div>
 
-  </main>
+</main>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -228,8 +268,29 @@ if ($result) {
           modalCustomerCity.value = '';
         }
       });
+
+      // Client-side quick filter for small/medium lists (optional)
+      const searchInput = document.getElementById('searchInput');
+      const customersTable = document.getElementById('customersTable');
+      if (searchInput && customersTable) {
+        searchInput.addEventListener('input', function() {
+          const q = this.value.trim().toLowerCase();
+          const rows = customersTable.querySelectorAll('tbody tr');
+          rows.forEach(row => {
+            // skip "no customers found" row (it has only one td colspan)
+            if (row.children.length < 2) return;
+            const text = row.innerText.toLowerCase();
+            if (!q || text.indexOf(q) !== -1) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
     });
 </script>
+
 <style>
   html, body {
     height: 100%;

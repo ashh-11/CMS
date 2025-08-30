@@ -1,6 +1,10 @@
 <?php
 ob_start();
-session_start();
+
+// Start session only if not already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 define('DB_HOSTNAME', 'localhost');
 define('DB_USERNAME', 'root');
@@ -19,4 +23,3 @@ if ($conn === false) {
 }
 
 mysqli_set_charset($conn, "utf8mb4");
-?>

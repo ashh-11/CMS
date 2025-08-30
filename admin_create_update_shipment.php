@@ -400,7 +400,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST' && !$shipment_id) {
     </div>
   </section>
 </main>
-
+<?php include('inc.footer.php'); ?>
 
 <style>
   html, body {

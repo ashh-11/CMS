@@ -260,6 +260,7 @@ if ($result) {
       });
     });
 </script>
+
 <style>
   html, body {
     height: 100%;

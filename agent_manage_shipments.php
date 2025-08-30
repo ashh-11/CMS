@@ -83,7 +83,8 @@ if ($result) {
     $error_message = "<div class='alert alert-danger'>Error fetching shipments for branch: " . mysqli_error($conn) . "</div>";
 }
 ?>
-  <?php include('inc/inc.sidebar.php'); ?>
+  <?php include('inc.sidebar.php'); ?>
+
 
   <main id="main" class="main">
 

@@ -1,20 +1,19 @@
 /*
 * Template Name: TrackIt Couriers Custom Theme
-* Based on NiceAdmin Bootstrap Template (https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
+* Based on NiceAdmin Bootstrap Template
 * Customization by AI for [User Project]
 * License: Custom (for educational project)
 */
 
-/* --- Color Palette --- */
-/*
+/* --- Color Palette ---
 Main Blue (Dark): #5A90D7
 Light Purple: #819CDD
 Lighter Blue: #7AAEEA
 Light Pink/Beige: #E5D1CF
 Medium Blue (Button/Accent): #7EB4F2
 White: #FFFFFF
-Coral (for warnings/accents): #FE6A53
-Dark Grey (for fallback text): #444444
+Coral (Warnings/Accents): #FE6A53
+Dark Grey (Fallback text): #444444
 */
 
 /*--------------------------------------------------------------
@@ -27,30 +26,25 @@ Dark Grey (for fallback text): #444444
 html, body {
   height: 100%;
   margin: 0;
-  background-color: #FFFFFF; /* White for the overall page background */
+  background-color: #FFFFFF;
   font-family: "Open Sans", sans-serif;
-  color: #3B428A; /* Main Blue (Dark) for general body text */
-}
-
-body {
+  color: #3B428A;
   display: flex;
   flex-direction: column;
 }
 
 a {
-  color: #5A90D7; /* Main Blue for general links */
+  color: #5A90D7;
   text-decoration: none;
   transition: color 0.3s ease;
 }
-
 a:hover {
-  color: #7AAEEA; /* Lighter Blue on hover */
-  text-decoration: none;
+  color: #7AAEEA;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Nunito", sans-serif;
-  color: #3B428A; /* Main Blue (Dark) for headings */
+  color: #3B428A;
 }
 
 /*--------------------------------------------------------------
@@ -59,14 +53,14 @@ h1, h2, h3, h4, h5, h6 {
 #header {
   transition: all 0.5s;
   z-index: 997;
-  height: 70px; /* Increased header height */
+  height: 70px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-  background-color: #5A90D7; /* Main Blue for header background */
+  background-color: #7AAEEA;
   padding-left: 20px;
   display: flex;
   align-items: center;
-  position: fixed; /* Make header fixed */
-  width: 100%; /* Full width */
+  position: fixed;
+  width: 100%;
   top: 0;
   left: 0;
 }
@@ -77,68 +71,41 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  width: 280px; /* Base width for logo area */
+  width: 280px;
 }
 
-#header .logo svg {
-    height: 30px; /* SVG height */
-    width: auto;
-    flex-shrink: 0;
-}
-#header .logo svg path,
-#header .logo svg rect {
-    fill: #FFFFFF !important; /* White icon on blue header */
-}
-#header .logo svg text {
-    fill: #FFFFFF !important; /* White text for logo name */
-    font-family: "Nunito", sans-serif; /* Ensure font is applied to SVG text */
-    font-size: 22px;
-    font-weight: 700;
-}
-#header .logo:hover svg path,
-#header .logo:hover svg rect,
-#header .logo:hover svg text {
-    fill: #E5D1CF !important; /* Light Pink/Beige on hover */
-}
-#header .logo span { /* Hide default NiceAdmin span text if SVG text is preferred */
-    display: none;
-}
-
-
-/* Sidebar Toggle Button */
 #header .toggle-sidebar-btn {
-  font-size: 28px; /* Slightly smaller icon */
+  font-size: 28px;
   padding-left: 10px;
   cursor: pointer;
-  color: #FFFFFF; /* White icon */
+  color: #FFFFFF;
   transition: color 0.3s ease;
 }
 #header .toggle-sidebar-btn:hover {
-    color: #E5D1CF;
+  color: #E5D1CF;
 }
 
-/* Header Search Bar */
+/* Search Bar */
 #header .search-bar {
-  min-width: 300px; /* Adjust width */
+  min-width: 300px;
   padding: 0 20px;
-  flex-grow: 1; /* Allow search bar to grow */
+  flex-grow: 1;
 }
 @media (max-width: 1199px) {
   #header .search-bar {
     position: fixed;
-    top: 70px; /* Below header */
+    top: 70px;
     left: 0;
     right: 0;
     padding: 20px;
-    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
-    background: #5A90D7; /* Match header background */
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    background: #5A90D7;
     z-index: 9999;
     visibility: hidden;
     opacity: 0;
     transition: 0.3s;
   }
-  #header .search-bar-show { /* Class added by NiceAdmin JS */
-    top: 70px;
+  #header .search-bar-show {
     visibility: visible;
     opacity: 1;
   }
@@ -149,30 +116,25 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.15); /* Slight transparency */
+  background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
-
 #header .search-form input {
   border: 0;
   font-size: 14px;
   color: #FFFFFF;
   padding: 8px 12px;
   border-radius: 8px;
-  transition: 0.3s;
   width: 100%;
   background: transparent;
 }
 #header .search-form input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.7);
 }
-#header .search-form input:focus,
-#header .search-form input:hover {
+#header .search-form input:focus {
   outline: none;
   box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
 }
-
 #header .search-form button {
   border: 0;
   padding: 0 10px;
@@ -181,11 +143,11 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 18px;
 }
 #header .search-form button:hover {
-    color: #E5D1CF;
+  color: #E5D1CF;
 }
 
 /*--------------------------------------------------------------
-# Header Nav (Notifications, User Profile)
+# Header Nav
 --------------------------------------------------------------*/
 .header-nav ul {
   list-style: none;
@@ -201,19 +163,17 @@ h1, h2, h3, h4, h5, h6 {
   transition: color 0.3s ease;
 }
 .header-nav .nav-icon:hover {
-    color: #E5D1CF;
+  color: #E5D1CF;
 }
 
 .header-nav .nav-profile {
   color: #FFFFFF;
 }
-
 .header-nav .nav-profile img {
   max-height: 36px;
   border: 2px solid #E5D1CF;
   border-radius: 50%;
 }
-
 .header-nav .nav-profile span {
   font-size: 14px;
   font-weight: 600;
@@ -223,111 +183,10 @@ h1, h2, h3, h4, h5, h6 {
 .header-nav .badge-number {
   position: absolute;
   inset: -2px -5px auto auto;
-  font-weight: normal;
   font-size: 12px;
   padding: 3px 6px;
   background-color: #FE6A53;
   color: #FFFFFF;
-}
-
-.header-nav .notifications, .header-nav .messages { /* Combined styling */
-  inset: 8px -15px auto auto !important;
-  background-color: #5A90D7;
-  border: 1px solid #819CDD;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-.header-nav .notifications .dropdown-header,
-.header-nav .messages .dropdown-header {
-  text-align: center;
-  font-size: 15px;
-  padding: 10px 25px;
-  background-color: #819CDD;
-  color: #FFFFFF;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-.header-nav .notifications .dropdown-header a span,
-.header-nav .messages .dropdown-header a span {
-    background-color: #7AAEEA;
-    color: #FFFFFF;
-}
-
-.header-nav .notifications .dropdown-item,
-.header-nav .messages .message-item {
-  display: flex;
-  align-items: center;
-  padding: 15px 10px;
-  color: #FFFFFF;
-  transition: 0.3s;
-}
-
-.header-nav .notifications .dropdown-item i {
-  margin: 0 15px 0 10px;
-  font-size: 20px;
-  color: #E5D1CF;
-}
-.header-nav .notifications .dropdown-item h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #FFFFFF;
-}
-.header-nav .notifications .dropdown-item p {
-  font-size: 13px;
-  margin-bottom: 3px;
-  color: #E5D1CF;
-}
-.header-nav .notifications .dropdown-item:hover,
-.header-nav .messages .message-item:hover {
-  background-color: #819CDD;
-}
-
-.header-nav .messages .message-item img {
-  margin: 0 15px 0 10px;
-  max-height: 40px;
-  border-radius: 50%;
-}
-.header-nav .messages .message-item h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #FFFFFF;
-}
-.header-nav .messages .message-item p {
-  font-size: 13px;
-  margin-bottom: 3px;
-  color: #E5D1CF;
-}
-
-.header-nav .profile {
-  min-width: 240px;
-  padding-bottom: 0;
-  top: 8px !important;
-}
-.header-nav .profile .dropdown-header h6 {
-  font-size: 18px;
-  margin-bottom: 0;
-  font-weight: 600;
-  color: #FFFFFF;
-}
-.header-nav .profile .dropdown-header span {
-  font-size: 14px;
-  color: #E5D1CF;
-}
-.header-nav .profile .dropdown-item {
-  font-size: 14px;
-  padding: 10px 15px;
-  color: #FFFFFF;
-  transition: 0.3s;
-}
-.header-nav .profile .dropdown-item i {
-  margin-right: 10px;
-  font-size: 18px;
-  line-height: 0;
-  color: #7AAEEA;
-}
-.header-nav .profile .dropdown-item:hover {
-  background-color: #819CDD;
 }
 
 /*--------------------------------------------------------------
@@ -335,385 +194,204 @@ h1, h2, h3, h4, h5, h6 {
 --------------------------------------------------------------*/
 .sidebar {
   position: fixed;
-  top: 70px; /* Below header */
+  top: 70px;
   left: 0;
   bottom: 0;
-  width: 280px; /* Sidebar width */
+  width: 280px;
   z-index: 996;
   transition: all 0.3s;
-  padding: 20px 15px; /* Adjusted padding */
+  padding: 20px 15px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #aab7cf transparent; /* Default scrollbar colors */
-  box-shadow: 2px 0px 15px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-  background-color: #FFFFFF; /* White sidebar background */
+  scrollbar-color: #aab7cf transparent;
+  box-shadow: 2px 0px 15px rgba(0, 0, 0, 0.05);
+  background-color: #FFFFFF;
 }
-
 @media (max-width: 1199px) {
   .sidebar {
-    left: -280px; /* Hide sidebar off-canvas */
+    left: -280px;
   }
 }
-
 .sidebar::-webkit-scrollbar {
-  width: 6px; /* Wider scrollbar */
-  background-color: #F0F2F5; /* Light grey scrollbar track */
+  width: 6px;
+  background-color: #F0F2F5;
 }
-
 .sidebar::-webkit-scrollbar-thumb {
-  background-color: #819CDD; /* Light Purple scrollbar thumb */
+  background-color: #819CDD;
   border-radius: 10px;
 }
 
-/* Main Content Area adjustments based on sidebar state */
-@media (min-width: 1200px) {
-  #main, #footer {
-    /* margin-left: 280px; Match sidebar width */
-    padding-top: 30px; /* Just content padding-top, margin-top now handles gap */
-  }
-}
-
-/* Sidebar toggle classes from NiceAdmin JS */
-body.toggle-sidebar .sidebar {
-  left: 0; /* Show sidebar */
-}
-@media (min-width: 1200px) {
-  body.toggle-sidebar #main,
-  body.toggle-sidebar #footer {
-    margin-left: 0; /* Remove margin when sidebar is fully collapsed/hidden */
-  }
-  body.toggle-sidebar .sidebar {
-    left: -280px; /* Hide sidebar off-canvas */
-  }
-}
-
-
+/* Sidebar nav items */
 .sidebar-nav {
   padding: 0;
   margin: 0;
   list-style: none;
 }
-
 .sidebar-nav .nav-item {
-  margin-bottom: 8px; /* More spacing between items */
+  margin-bottom: 8px;
 }
-
 .sidebar-nav .nav-heading {
-  font-size: 12px; /* Slightly larger heading */
+  font-size: 12px;
   text-transform: uppercase;
-  color: #B77253; /* Brownish Orange for headings */
+  color: #B77253;
   font-weight: 600;
-  margin: 15px 0 8px 0; /* More padding */
-  padding-left: 15px; /* Indent heading */
+  margin: 15px 0 8px 0;
+  padding-left: 15px;
 }
-
 .sidebar-nav .nav-link {
   display: flex;
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #3B428A; /* Main Blue for links */
+  color: #3B428A;
+  padding: 12px 15px;
+  border-radius: 8px;
   transition: 0.3s;
-  background: transparent; /* Clear background */
-  padding: 12px 15px; /* More padding */
-  border-radius: 8px; /* Rounded links */
 }
-
 .sidebar-nav .nav-link i {
-  font-size: 18px; /* Larger icons */
+  font-size: 18px;
   margin-right: 12px;
-  color: #819CDD; /* Light Purple icon color */
-  transition: color 0.3s ease;
-}
-
-.sidebar-nav .nav-link.collapsed {
-  color: #819CDD; /* Light Purple for collapsed */
-  background: #FFFFFF;
-}
-.sidebar-nav .nav-link.collapsed i {
   color: #819CDD;
 }
-
 .sidebar-nav .nav-link:hover {
-  color: #5A90D7; /* Main Blue on hover */
-  background: #F0F2F5; /* Light grey hover */
-}
-.sidebar-nav .nav-link:hover i {
   color: #5A90D7;
+  background: #F0F2F5;
 }
-
-.sidebar-nav .nav-link.active { /* Active link style */
+.sidebar-nav .nav-link.active {
   color: #FFFFFF;
-  background-color: #5A90D7; /* Main Blue active background */
+  background-color: #5A90D7;
 }
 .sidebar-nav .nav-link.active i {
-  color: #E5D1CF; /* Light Pink/Beige icon for active */
-}
-
-
-.sidebar-nav .nav-link .bi-chevron-down {
-  margin-right: 0;
-  transition: transform 0.2s ease-in-out;
-}
-
-.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down {
-  transform: rotate(180deg);
-}
-
-.sidebar-nav .nav-content {
-  padding: 5px 0 0 0;
-  margin: 0;
-  list-style: none;
-}
-
-.sidebar-nav .nav-content a {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: #819CDD; /* Light Purple for sub-links */
-  transition: 0.3s;
-  padding: 8px 0 8px 45px; /* Adjusted padding for sub-links */
-}
-
-.sidebar-nav .nav-content a i {
-  font-size: 8px; /* Larger dot for sub-links */
-  margin-right: 10px;
-  line-height: 0;
-  border-radius: 50%;
-  color: #7AAEEA; /* Lighter Blue dot */
-}
-
-.sidebar-nav .nav-content a:hover,
-.sidebar-nav .nav-content a.active {
-  color: #5A90D7; /* Main Blue on hover/active */
-}
-
-.sidebar-nav .nav-content a.active i {
-  background-color: #5A90D7; /* Main Blue dot for active sub-link */
-  color: transparent; /* Hide actual icon, let background show */
+  color: #E5D1CF;
 }
 
 /*--------------------------------------------------------------
-# Main Content Area
+# Main Content
 --------------------------------------------------------------*/
 #main {
-    position: relative; /* Needed for z-index */
-    z-index: 1; /* Ensure it's above potential body background */
-    margin-top: calc(70px + 30px); /* Height of header (70px) + desired gap (30px) */
-    margin-bottom: 20px; /* Space from footer */
-    /* margin-left: calc(280px + 30px); Sidebar width (280px) + desired gap (30px) */
-    margin-right: auto; /* Auto margin on right to help center within available space */
-    padding: 30px; /* Internal padding for the main content area */
-    background-color: #FFFFFF; /* White background for the main content block */
-    border-radius: 20px; /* Rounded corners */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Subtle shadow */
-    max-width: calc(100% - (280px + 30px + 20px)); /* Calc: 100% - (sidebar_width + left_gap + right_margin) */
-    width: auto; /* Allow width to adjust dynamically */
-    flex-grow: 1;
+  position: relative;
+  z-index: 1;
+  margin-top: calc(70px + 30px);
+  margin-bottom: 20px;
+  margin-right: auto;
+  padding: 30px;
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  flex-grow: 1;
 }
 
-/* Adjustments for when sidebar is toggled (collapsed or fully hidden by JS) */
-body.toggle-sidebar #main {
-    /* margin-left: calc(0px + 30px); When sidebar is hidden/off-canvas, margin from left edge + gap */
-    max-width: calc(100% - (0px + 30px + 20px)); /* Adjust max-width accordingly */
-    margin-right: auto; /* Keep centered */
-}
-
-/* For very small screens where sidebar is always off-canvas */
+/* Responsive fix for small screens */
 @media (max-width: 1199px) {
-    #main {
-        margin-left: 20px !important; /* Smaller left margin, remove sidebar considerations */
-        margin-right: 20px !important; /* Smaller right margin */
-        max-width: none !important; /* Allow full width minus margins */
-        width: auto !important;
-    }
+  #main {
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+    max-width: none !important;
+    width: auto !important;
+  }
 }
 
-
-/* Page Title within Main Content */
-.pagetitle {
-    margin-top: 0; /* Ensure no extra top margin within the main block */
-    margin-bottom: 15px; /* Space below breadcrumbs */
-}
+/* Page Title */
 .pagetitle h1 {
-    color: #3B428A;
-    font-weight: 700;
-    text-align: left;
-    margin-bottom: 5px; /* Closer to breadcrumbs */
-    font-size: 2.2em;
+  color: #3B428A;
+  font-weight: 700;
+  font-size: 2.2em;
+  margin-bottom: 5px;
 }
 .breadcrumb {
-    justify-content: flex-start;
-    background-color: transparent;
-    padding: 0;
-    margin-bottom: 0;
-    font-size: 0.9em;
+  justify-content: flex-start;
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9em;
 }
 .breadcrumb .breadcrumb-item a {
-    color: #7AAEEA;
+  color: #7AAEEA;
 }
 .breadcrumb .breadcrumb-item.active {
-    color: #5A90D7;
-    font-weight: 600;
+  color: #5A90D7;
+  font-weight: 600;
 }
 
-/* Card Styling */
+/* Cards */
 .card {
-    border: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    border-radius: 15px;
-    background-color: #FFFFFF;
-    margin-bottom: 30px; /* Spacing between cards */
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 15px;
+  background-color: #FFFFFF;
+  margin-bottom: 30px;
 }
 .card-title {
-    color: #3B428A;
-    font-weight: 700;
-    margin-bottom: 20px;
-    font-size: 1.5em;
+  color: #3B428A;
+  font-weight: 700;
+  margin-bottom: 20px;
+  font-size: 1.5em;
 }
 .card-body p {
-    color: #819CDD; /* Light Purple for general paragraph text */
-    font-size: 0.95em;
-    line-height: 1.6;
-}
-.card-body h6 {
-    color: #3B428A;
-    font-weight: 600;
-    margin-top: 15px;
-    margin-bottom: 10px;
-    font-size: 1.1em;
+  color: #819CDD;
+  font-size: 0.95em;
+  line-height: 1.6;
 }
 
-hr {
-    border-top: 1px solid #E5D1CF;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-
-
-/* Form specific styles */
-.form-floating label {
-    color: #819CDD; /* Light Purple for floating labels */
-}
-.form-floating .form-control:focus ~ label,
-.form-floating .form-control:not(:placeholder-shown) ~ label,
-.form-floating .form-select:focus ~ label,
-.form-floating .form-select:not([value=""]) ~ label { /* For selects that have a value */
-    color: #5A90D7; /* Main Blue when active/filled */
-}
+/* Forms */
 .form-control, .form-select, textarea {
-    border: 1px solid #819CDD;
-    border-radius: 8px;
-    padding: 10px 15px;
-    color: #3B428A;
+  border: 1px solid #819CDD;
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: #3B428A;
 }
-.form-control:focus, .form-select:focus, textarea:focus {
-    border-color: #7AAEEA;
-    box-shadow: 0 0 0 0.25rem rgba(122, 174, 234, 0.25);
-}
-.form-control.is-invalid, .form-select.is-invalid, textarea.is-invalid {
-    border-color: #FE6A53; /* Coral for invalid fields */
+.form-control:focus {
+  border-color: #7AAEEA;
+  box-shadow: 0 0 0 0.25rem rgba(122, 174, 234, 0.25);
 }
 .invalid-feedback {
-    color: #FE6A53;
+  color: #FE6A53;
 }
 
-
-/* Button Styling */
+/* Buttons */
 .btn {
-    font-weight: 600;
-    border-radius: 8px;
-    padding: 10px 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.btn i {
-    margin-right: 8px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 .btn-primary {
-    background-color: #7AAEEA !important;
-    border-color: #7AAEEA !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 4px 8px rgba(90, 144, 215, 0.2);
+  background-color: #7AAEEA !important;
+  border-color: #7AAEEA !important;
+  color: #FFFFFF !important;
 }
 .btn-primary:hover {
-    background-color: #5A90D7 !important;
-    border-color: #5A90D7 !important;
-    box-shadow: 0 6px 12px rgba(90, 144, 215, 0.3);
+  background-color: #5A90D7 !important;
+  border-color: #5A90D7 !important;
 }
 .btn-secondary {
-    background-color: #819CDD !important;
-    border-color: #819CDD !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 4px 8px rgba(129, 156, 221, 0.2);
+  background-color: #819CDD !important;
+  border-color: #819CDD !important;
+  color: #FFFFFF !important;
 }
 .btn-secondary:hover {
-    background-color: #5A90D7 !important;
-    border-color: #5A90D7 !important;
-    box-shadow: 0 6px 12px rgba(90, 144, 215, 0.3);
+  background-color: #5A90D7 !important;
+  border-color: #5A90D7 !important;
 }
 
-/* Specific button styles for actions in tables etc. */
-.custom-btn-action-edit, .custom-btn-action-delete, .custom-btn-action-print {
-    font-size: 0.8em; /* Smaller font for actions */
-    padding: 6px 10px; /* Smaller padding */
-    margin-right: 5px;
-}
-.custom-btn-action-edit {
-    background-color: #7AAEEA !important;
-    border-color: #7AAEEA !important;
-    color: #FFFFFF !important;
-}
-.custom-btn-action-edit:hover {
-    background-color: #5A90D7 !important;
-    border-color: #5A90D7 !important;
-}
-.custom-btn-action-delete {
-    background-color: #FE6A53 !important;
-    border-color: #FE6A53 !important;
-    color: #FFFFFF !important;
-}
-.custom-btn-action-delete:hover {
-    background-color: #B77253 !important;
-    border-color: #B77253 !important;
-}
-.custom-btn-action-print {
-    background-color: #7EB4F2 !important;
-    border-color: #7EB4F2 !important;
-    color: #FFFFFF !important;
-}
-.custom-btn-action-print:hover {
-    background-color: #5A90D7 !important;
-    border-color: #5A90D7 !important;
-}
-
-/* Alert Styling */
+/* Alerts */
 .alert-success {
-    background-color: #7AAEEA;
-    border-color: #7AAEEA;
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-weight: 500;
+  background-color: #7AAEEA;
+  border-color: #7AAEEA;
+  color: #FFFFFF;
+  border-radius: 8px;
 }
 .alert-danger {
-    background-color: #FE6A53;
-    border-color: #FE6A53;
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-weight: 500;
+  background-color: #FE6A53;
+  border-color: #FE6A53;
+  color: #FFFFFF;
+  border-radius: 8px;
 }
 .alert-warning {
-    background-color: #E5D1CF;
-    border-color: #E5D1CF;
-    color: #3B428A;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-weight: 500;
+  background-color: #E5D1CF;
+  border-color: #E5D1CF;
+  color: #3B428A;
+  border-radius: 8px;
 }
-
-/* Header, Footer, Sidebar are styled in their respective files or globally in inc.header.php */

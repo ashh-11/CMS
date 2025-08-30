@@ -89,9 +89,7 @@ if ($result) {
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">All Courier Shipments</h5>
-              <p>Admin can view, search, and manage all shipments across all locations.</p>
-
+          
               <?php echo $success_message; ?>
               <?php echo $error_message; ?>
 

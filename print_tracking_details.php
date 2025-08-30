@@ -8,7 +8,7 @@ $breadcrumbs = [
 $is_public_landing_page = true;
 include('inc.header.php');
 
-$tracking_number = mysqli_real_escape_string($conn, trim($_GET['tracking_number'] ?? ''));
+$tracking_number = mysqli_real_escape_string($conn, trim($_GET['trackingNumber'] ?? ''));
 $shipment_data = null;
 $tracking_history = [];
 $error_message = '';
@@ -321,7 +321,7 @@ if (empty($tracking_number)) {
       border-color: #5A90D7 !important;
   }
 
-  #header .d-flex.align-items-center.justify-content-between .toggle-sidebar-btn {
+  /* #header .d-flex.align-items-center.justify-content-between .toggle-sidebar-btn {
       display: none !important;
   }
   #header .search-bar {
@@ -341,7 +341,7 @@ if (empty($tracking_number)) {
   #header .header-nav .nav-link:hover {
       color: #7AAEEA !important;
   }
-  .header-nav .nav-item.d-block.d-lg-none { display: none !important; }
+  .header-nav .nav-item.d-block.d-lg-none { display: none !important; } */
 
   .right-aligned-image-container {
     padding: 20px;
