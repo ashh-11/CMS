@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </div>
 
       <div class="col-lg-6 d-flex align-items-center justify-content-center main-content-right">
-        <img src="assets/img/contact_us_illustration.jpg" alt="Contact Us Illustration" class="img-fluid" style="max-height: 80vh;">
+        <img src="assets/img/contact.png" alt="Contact Us Illustration" class="img-fluid" style="max-height: 70vh;">
       </div>
 
     </div>

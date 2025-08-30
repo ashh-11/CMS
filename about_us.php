@@ -49,7 +49,7 @@ include('inc.header.php');
       </div>
 
       <div class="col-lg-6 d-flex align-items-center justify-content-center main-content-right">
-        <img src="assets/img/pakistan_delivery.jpg" alt="Pakistan Delivery Network Illustration" class="img-fluid" style="max-height: 80vh;">
+        <img src="assets/img/about.png" alt="Pakistan Delivery Network Illustration" class="img-fluid" style="max-height: 90vh;">
       </div>
 
     </div>
