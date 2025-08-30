@@ -319,18 +319,6 @@ if (isLoggedIn()) {
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
-        <?php if ($is_public_landing_page || $is_public_track_page) { ?>
-            <li class="nav-item">
-                <a class="nav-link" href="#">ABOUT</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">CATEGORIES</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">PROMO</a>
-            </li>
-        <?php } ?>
-
         <?php if (!$is_public_landing_page && !$is_public_track_page) { ?>
         <li class="nav-item d-block d-lg-none">
           <a class="nav-link nav-icon search-bar-toggle " href="#">
@@ -339,7 +327,7 @@ if (isLoggedIn()) {
         </li>
         <?php } ?>
 
-        <?php if (isLoggedIn()) { ?>
+        <?php if (!$is_public_landing_page && !$is_public_track_page &&isLoggedIn()) { ?>
         <li class="nav-item dropdown">
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
@@ -365,8 +353,6 @@ if (isLoggedIn()) {
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li class="dropdown-header"><h6><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></h6><span><?php echo htmlspecialchars(ucfirst(getUserRole() ?? '')); ?></span></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item d-flex align-items-center" href="users-profile.html"><i class="bi bi-person"></i><span>My Profile</span></a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item d-flex align-items-center" href="logout.php"><i class="bi bi-box-arrow-right"></i><span>Sign Out</span></a></li>
             </ul>

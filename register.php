@@ -140,6 +140,7 @@ if (isset($conn) && $conn) {
   <style>
     body {
       background-color: #819CDD;
+      background-image: linear-gradient(135deg, #819CDD 10%, #ffffff 50%, #5A90D7 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -148,7 +149,7 @@ if (isset($conn) && $conn) {
       color: #3B428A;
     }
 
-    .section.register {
+    .section.register { /* Reusing register class but it's for login page */
       background: none;
       flex-grow: 1;
       display: flex;
@@ -156,7 +157,7 @@ if (isset($conn) && $conn) {
       align-items: center;
     }
 
-    .login-container { /* Reusing name for consistency with login.php */
+    .login-container {
         background-color: #FFFFFF;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -191,26 +192,32 @@ if (isset($conn) && $conn) {
         text-align: center;
         margin-bottom: 30px;
     }
-    .logo-container .logo {
-        text-decoration: none;
+    .logo-container .logo-brand { /* Wrapper for image and text */
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        text-decoration: none;
+        gap: 8px; /* Space between image and text */
     }
-    .logo-container .logo svg path,
-    .logo-container .logo svg rect {
-        fill: #3B428A !important;
+    .logo-container .logo-brand img {
+        height: 80px; /* Fixed height for the logo image */
+        width: auto;
     }
-    .logo-container .logo svg text {
-        fill: #3B428A !important;
+    .logo-container .logo-brand .logo-text-trackit {
+        font-family: "Nunito", sans-serif;
+        font-size: 30px; /* Larger text for TrackIt */
+        font-weight: 800;
+        color: #3B428A; /* Main Blue */
     }
-    .logo-container .logo:hover svg path,
-    .logo-container .logo:hover svg rect,
-    .logo-container .logo:hover svg text {
-        fill: #5A90D7 !important;
+    .logo-container .logo-brand .logo-text-couriers {
+        font-family: "Nunito", sans-serif;
+        font-size: 30px; /* Slightly smaller for Couriers */
+        font-weight: 800;
+        color: #FE6A53; /* Coral */
+        /* margin-left: 2px; Further separation for Couriers */
     }
-    .logo-container .logo span {
-        display: none;
+    .logo-container .logo-brand:hover .logo-text-trackit,
+    .logo-container .logo-brand:hover .logo-text-couriers {
+        color: #5A90D7; /* Main Blue on hover */
     }
 
 
@@ -287,19 +294,16 @@ if (isset($conn) && $conn) {
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-10 d-flex flex-column align-items-center justify-content-center">
-
-              <div class="login-container">
+                <div class="login-container">
                 <div class="login-form-col">
                     <div class="logo-container">
-                        <a href="index.html" class="logo">
-                          <svg width="180" height="35" viewBox="0 0 180 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15.9 0C7.16 0 0 7.02 0 15.6C0 24.18 15.9 35 15.9 35S31.8 24.18 31.8 15.6C31.8 7.02 24.64 0 15.9 0ZM15.9 21.28A5.68 5.68 0 1 1 15.9 10.12 5.68 5.68 0 0 1 15.9 21.28Z" fill="#3B428A"/>
-                            <rect x="12" y="12" width="7" height="7" fill="#FE6A53"/>
-                            <text x="35" y="23" font-family="Nunito, sans-serif" font-size="22" font-weight="900" fill="#3B428A">TrackIt</text>
-                            <text x="110" y="23" font-family="Nunito, sans-serif" font-size="18" fill="#FE6A53">Couriers</text>
-                          </svg>
+                        <a href="index.html" class="logo-brand">
+                          <img src="assets/img/logo.png" alt="TrackIt Couriers Logo">
+                          <span class="logo-text-trackit">TrackIt</span>
+                          <span class="logo-text-couriers">Couriers</span>
                         </a>
                     </div>
+
 
                     <div class="pt-4 pb-2">
                       <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>

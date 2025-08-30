@@ -120,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <style>
     body {
       background-color: #819CDD;
+      background-image: linear-gradient(135deg, #819CDD 10%, #ffffff 50%, #5A90D7 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -128,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       color: #3B428A;
     }
 
-    .section.register {
+    .section.register { /* Reusing register class but it's for login page */
       background: none;
       flex-grow: 1;
       display: flex;
@@ -141,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         padding: 40px;
-        max-width: 1200px; /* Increased max-width to make the image larger */
+        max-width: 1200px;
         width: 90%;
         display: flex;
         overflow: hidden;
@@ -171,26 +172,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         text-align: center;
         margin-bottom: 30px;
     }
-    .logo-container .logo {
-        text-decoration: none;
+    .logo-container .logo-brand { /* Wrapper for image and text */
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        text-decoration: none;
+        gap: 8px; /* Space between image and text */
     }
-    .logo-container .logo svg path,
-    .logo-container .logo svg rect {
-        fill: #3B428A !important;
+    .logo-container .logo-brand img {
+        height: 80px; /* Fixed height for the logo image */
+        width: auto;
     }
-    .logo-container .logo svg text {
-        fill: #3B428A !important;
+    .logo-container .logo-brand .logo-text-trackit {
+        font-family: "Nunito", sans-serif;
+        font-size: 30px; /* Larger text for TrackIt */
+        font-weight: 800;
+        color: #3B428A; /* Main Blue */
     }
-    .logo-container .logo:hover svg path,
-    .logo-container .logo:hover svg rect,
-    .logo-container .logo:hover svg text {
-        fill: #5A90D7 !important;
+    .logo-container .logo-brand .logo-text-couriers {
+        font-family: "Nunito", sans-serif;
+        font-size: 30px; /* Slightly smaller for Couriers */
+        font-weight: 800;
+        color: #FE6A53; /* Coral */
+        /* margin-left: 2px; Further separation for Couriers */
     }
-    .logo-container .logo span {
-        display: none;
+    .logo-container .logo-brand:hover .logo-text-trackit,
+    .logo-container .logo-brand:hover .logo-text-couriers {
+        color: #5A90D7; /* Main Blue on hover */
     }
 
 
@@ -271,13 +278,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               <div class="login-container">
                 <div class="login-form-col">
                     <div class="logo-container">
-                        <a href="index.html" class="logo">
-                          <svg width="180" height="35" viewBox="0 0 180 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15.9 0C7.16 0 0 7.02 0 15.6C0 24.18 15.9 35 15.9 35S31.8 24.18 31.8 15.6C31.8 7.02 24.64 0 15.9 0ZM15.9 21.28A5.68 5.68 0 1 1 15.9 10.12 5.68 5.68 0 0 1 15.9 21.28Z" fill="#3B428A"/>
-                            <rect x="12" y="12" width="7" height="7" fill="#FE6A53"/>
-                            <text x="35" y="23" font-family="Nunito, sans-serif" font-size="22" font-weight="900" fill="#3B428A">TrackIt</text>
-                            <text x="110" y="23" font-family="Nunito, sans-serif" font-size="18" fill="#FE6A53">Couriers</text>
-                          </svg>
+                        <a href="index.html" class="logo-brand">
+                          <img src="assets/img/logo.png" alt="TrackIt Couriers Logo">
+                          <span class="logo-text-trackit">TrackIt</span>
+                          <span class="logo-text-couriers">Couriers</span>
                         </a>
                     </div>
 
@@ -357,3 +361,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </body>
 
 </html>
+<style>
+
+  .container {
+    padding: 20px;
+  }
+
+  .row {
+    margin: 0;
+  }
+
+  .col-lg-10 {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-label {
+    color: #495057;
+  }
+
+  .form-control {
+    border: 1px solid #ced4da;
+  }
+
+  .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+
+  .small a {
+    color: #007bff;
+  }
+
+  .small a:hover {
+    text-decoration: underline;
+  }
+</style>

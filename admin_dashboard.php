@@ -170,14 +170,14 @@ if (empty(array_filter($chart_data_for_display))) {
             <div class="col-xxl-4 col-md-4">
               <div class="card info-card customers-card" style="border-left: 5px solid #819CDD;">
                 <div class="card-body">
-                  <h5 class="card-title" style="color: #3B428A;">Total Staff</h5>
+                  <h5 class="card-title" style="color: #3B428A;">Total Agents</h5>
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #E5D1CF;">
                       <i class="bi bi-people" style="color: #819CDD;"></i>
                     </div>
                     <div class="ps-3">
                       <h6><?php echo htmlspecialchars($total_staff); ?></h6>
-                      <span class="text-muted small pt-2 ps-1">Staff Members</span>
+                      <span class="text-muted small pt-2 ps-1">Agents</span>
                     </div>
                   </div>
                 </div>
@@ -240,7 +240,8 @@ if (empty(array_filter($chart_data_for_display))) {
       </div>
     </section>
   </main>
-<?php include('inc.footer.php'); ?>
+
+  <?php include 'inc.footer.php'; ?>
 
 <style>
   html, body {

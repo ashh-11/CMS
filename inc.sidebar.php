@@ -36,19 +36,22 @@ $current_page_title = $page_title ?? '';
           strpos($current_page_title, 'Bill') !== false
       );
       ?>
+      <!-- FIX: Added '#' to data-bs-target -->
       <a class="nav-link <?php echo $is_shipments_menu_active ? '' : 'collapsed'; ?>" data-bs-target="#shipments-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-box"></i><span>Shipments</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="shipments-nav" class="nav-content collapse <?php echo $is_shipments_menu_active ? 'show' : ''; ?>" data-bs-parent="#sidebar-nav">
         <?php if ($user_role == ROLE_ADMIN) { ?>
           <li>
-            <a href="admin_manage_shipment.php" class="<?php echo ($current_page_title == "Manage All Shipments") ? 'active' : ''; ?>">
+            <!-- FIX: Changed admin_manage_shipment.php to admin_manage_shipments.php -->
+            <a href="admin_manage_shipments.php" class="<?php echo ($current_page_title == "Manage All Shipments") ? 'active' : ''; ?>">
               <i class="bi bi-circle"></i><span>Manage All Shipments</span>
             </a>
           </li>
         <?php } elseif ($user_role == ROLE_AGENT) { ?>
           <li>
-            <a href="agent_manage_shipment.php" class="<?php echo ($current_page_title == "Manage My Branch Shipments") ? 'active' : ''; ?>">
+            <!-- FIX: Changed agent_manage_shipment.php to agent_manage_shipments.php -->
+            <a href="agent_manage_shipments.php" class="<?php echo ($current_page_title == "Manage My Branch Shipments") ? 'active' : ''; ?>">
               <i class="bi bi-circle"></i><span>Manage My Branch Shipments</span>
             </a>
           </li>
@@ -96,12 +99,6 @@ $current_page_title = $page_title ?? '';
 
     <li class="nav-heading">System Pages</li>
 
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="users-profile.html">
-        <i class="bi bi-person"></i>
-        <span>My Profile</span>
-      </a>
-    </li>
 
     <li class="nav-item">
       <a class="nav-link collapsed" href="logout.php">
